@@ -17,7 +17,7 @@ class FitnessFunction:
 
     # Return the image of the fitness function for the bit string
     def result(self, parameters, size, bit_string):
-        return self.function(parameters, size, bit_string)
+        return self.function(parameters, size, bit_string.string)
 
     # Return the maximum of the fitness function for a selected size
     def maximum(self, parameters, size):
@@ -61,9 +61,26 @@ def jump_offset_m(parameters, size, bit_string):
         return 3 * size/4 + m - norm
 
 
-# Function returning the maximum of the JumpOffsetfunction
+# Function returning the maximum of the JumpOffset function
 def jump_offset_m_maximum(parameters, size):
     return int(parameters[0]) + size
+
+
+# Definition of the JumpOffsetSpike function
+def jump_offset_spike_m(parameters, size, bit_string):
+    m = int(parameters[0])
+    norm = bit_string.count('1')
+    if norm <= 3 * size/4 or norm >= 3 * size/4 + m:
+        return m + norm
+    elif norm == 3*size/4 + m/2:
+        return size + m + 1
+    else:
+        return 3*size/4 + m - norm
+
+
+# Function returning the maximum of the JumpOffsetSpike function
+def jump_offset_spike_m_maximum(parameters, size):
+    return size + int(parameters[0]) + 1
 
 
 # List containing every fitness functions
@@ -85,8 +102,19 @@ fitness_functions.append(JumpM)
 # Creation of JumpOffset
 gap_m = Parameter("m", "integer", 0, "size")
 JumpOffsetM = FitnessFunction("JumpOffset_m",
-                              "Function with a local minimum followed by a gap of size m and then a ramp going to .",
+                              "Function with a local minimum followed by a gap of size m and then a ramp going to "
+                              "the global maximum.",
                               [gap_m],
                               jump_offset_m,
                               jump_offset_m_maximum)
 fitness_functions.append(JumpOffsetM)
+
+# Creation of JumpOffsetSpike
+gap_m = Parameter("m", "integer", 0, "size")
+JumpOffsetSpikeM = FitnessFunction("JumpOffsetSpike_m",
+                                   "Function with a local minimum followed by a gap of size m with the global optimum "
+                                   "in the middle then a ramp going to.",
+                                   [gap_m],
+                                   jump_offset_spike_m,
+                                   jump_offset_spike_m_maximum)
+fitness_functions.append(JumpOffsetSpikeM)
