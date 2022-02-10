@@ -36,7 +36,7 @@ def one_plus_one(parameters, size, fitness_function, fitness_parameters):
     found_maximum = (fitness_value == fitness_maximum)
     while not found_maximum:
         # Creation of the offspring
-        new_bit_string = bit_string.create_offspring(strength/size)
+        new_bit_string = bit_string.create_offspring_p(strength/size)
         new_fitness_value = fitness_function.result(fitness_parameters, size, new_bit_string)
         iterations += 1
         # If the fitness value of the new bit string is better than before, it is kept
@@ -65,7 +65,7 @@ def sd_one_plus_one(parameters, size, fitness_function, fitness_parameters):
     r = 1
     while not found_maximum:
         # Creation of the offspring
-        new_bit_string = bit_string.create_offspring(r/size)
+        new_bit_string = bit_string.create_offspring_p(r/size)
         new_fitness_value = fitness_function.result(fitness_parameters, size, new_bit_string)
         iterations += 1
         u = u + 1
@@ -119,7 +119,7 @@ def sasd_one_plus_lambda(parameters, size, fitness_function, fitness_parameters)
             new_bit_strings = []
             new_fitness_values = []
             for i in range(lbd):
-                new_bit_string = bit_string.create_offspring(r/size)
+                new_bit_string = bit_string.create_offspring_p(r/size)
                 new_bit_strings.append(new_bit_string)
                 new_fitness_values.append(fitness_function.result(fitness_parameters, size, new_bit_string))
                 iterations += 1
@@ -150,7 +150,7 @@ def sasd_one_plus_lambda(parameters, size, fitness_function, fitness_parameters)
                     p = r / (2 * size)
                 else:
                     p = 2 * r / size
-                new_bit_string = bit_string.create_offspring(p)
+                new_bit_string = bit_string.create_offspring_p(p)
                 new_bit_strings.append(new_bit_string)
                 new_fitness_values.append(fitness_function.result(fitness_parameters, size, new_bit_string))
                 iterations += 1
@@ -173,11 +173,45 @@ def sasd_one_plus_lambda(parameters, size, fitness_function, fitness_parameters)
                 else:
                     r = 2*r
             new_r = min(max(2, r), size/4)
+            # TODO - Fix because values can become too large
             if u > 2 * pow(math.exp(1) * size / r, r) * math.log(size * R) / lbd:
                 new_r = 2
                 g = True
                 u = 0
         r = new_r
+    return bit_string, iterations
+
+
+def sd_rls(parameters, size, fitness_function, fitness_parameters):
+    R = int(parameters[0])
+    bit_string = BitString(size)
+    fitness_value = fitness_function.result(fitness_parameters, size, bit_string)
+    iterations = 1
+    fitness_maximum = fitness_function.maximum(fitness_parameters, size)
+    found_maximum = (fitness_value == fitness_maximum)
+    u = 0
+    s = 1
+    while not found_maximum:
+        new_bit_string = bit_string.create_offspring_s(s)
+        new_fitness_value = fitness_function.result(fitness_parameters, size, new_bit_string)
+        iterations += 1
+        u = u + 1
+        if new_fitness_value > fitness_value:
+            bit_string = new_bit_string
+            fitness_value = new_fitness_value
+            found_maximum = (fitness_value == fitness_maximum)
+            new_s = 1
+            u = 0
+        elif new_fitness_value == fitness_value and s == 1:
+            bit_string = new_bit_string
+            fitness_value = new_fitness_value
+            found_maximum = (fitness_value == fitness_maximum)
+        if u > math.comb(size, s) * math.log(R):
+            new_s = min(s + 1, size)
+            u = 0
+        else:
+            new_s = s
+        s = new_s
     return bit_string, iterations
 
 
@@ -205,6 +239,11 @@ Initial_Strength = Parameter("initial strength", "integer", 1, "size")
 Lambda = Parameter("Lambda", "integer", 0, float('inf'))
 SASDOnePlusLambda = EvolutionaryAlgorithm("SASD-(1+lambda) EA", [paramR, Initial_Strength, Lambda], sasd_one_plus_lambda)
 evolutionary_algorithms.append(SASDOnePlusLambda)
+
+# Creation of the SD-RLS
+paramR = Parameter("R", "integer", "size", float('inf'))
+SDRLS = EvolutionaryAlgorithm("SD-RLS", [paramR], sd_rls)
+evolutionary_algorithms.append(SDRLS)
 
 
 
