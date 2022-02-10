@@ -6,9 +6,8 @@ import numpy as np
 
 class EvolutionaryAlgorithm:
 
-    def __init__(self, name, description, parameters, algorithm):
+    def __init__(self, name, parameters, algorithm):
         self.name = name
-        self.description = description
         self.parameters = parameters
         self.algorithm = algorithm
 
@@ -20,7 +19,7 @@ class EvolutionaryAlgorithm:
     # Solve a fitness function with the algorithm and returns the number of iterations
     def solve(self, parameters, size, fitness_function, fitness_parameters):
         bit_string, iterations = self.algorithm(parameters, size, fitness_function, fitness_parameters)
-        return bit_string.string, iterations
+        return iterations
 
 
 # Algorithm for the (1+1) EA
@@ -50,7 +49,7 @@ def one_plus_one(parameters, size, fitness_function, fitness_parameters):
 
 # Algorithm for the SD(1+1) EA
 def sd_one_plus_one(parameters, size, fitness_function, fitness_parameters):
-    param_R = int(parameters[0])
+    R = int(parameters[0])
     # Creation of a random bit string of length "size"
     bit_string = BitString(size)
     # Compute the value of the fitness function for the previously created bit string
@@ -84,7 +83,7 @@ def sd_one_plus_one(parameters, size, fitness_function, fitness_parameters):
             fitness_value = new_fitness_value
             found_maximum = (fitness_value == fitness_maximum)
         # After too many iterations, the strength is increased and the number of iterations reset to 0
-        if u > 2 * pow(math.exp(1) * size / r, r) * math.log(size * param_R):
+        if u > 2 * pow(math.exp(1) * size / r, r) * math.log(size * R):
             # TODO - Does this need to be rounded to the previous/next integer if size is odd ?
             new_r = min(r+1, size/2)
             u = 0
@@ -95,7 +94,7 @@ def sd_one_plus_one(parameters, size, fitness_function, fitness_parameters):
 
 
 def sasd_one_plus_lambda(parameters, size, fitness_function, fitness_parameters):
-    param_R = int(parameters[0])
+    R = int(parameters[0])
     r_init = int(parameters[1])
     lbd = int(parameters[2])
     # Creation of a random bit string of length "size"
@@ -136,7 +135,7 @@ def sasd_one_plus_lambda(parameters, size, fitness_function, fitness_parameters)
                 g = False
                 u = 0
             else:
-                if u > 2 * pow(math.exp(1) * size / r, r) * math.log(size * int(param_R)) / lbd:
+                if u > 2 * pow(math.exp(1) * size / r, r) * math.log(size * int(R)) / lbd:
                     new_r = min(r + 1, size/2)
                     u = 0
                 else:
@@ -174,7 +173,7 @@ def sasd_one_plus_lambda(parameters, size, fitness_function, fitness_parameters)
                 else:
                     r = 2*r
             new_r = min(max(2, r), size/4)
-            if u > 2 * pow(math.exp(1) * size / r, r) * math.log(size * int(param_R)) / lbd:
+            if u > 2 * pow(math.exp(1) * size / r, r) * math.log(size * R) / lbd:
                 new_r = 2
                 g = True
                 u = 0
@@ -188,26 +187,23 @@ evolutionary_algorithms = []
 # Creation of the (1+1) EA
 # Strength -> Every bit if flipped with a probability of strength/size
 Strength = Parameter("strength", "integer", 1, "size")
-OnePlusOne = EvolutionaryAlgorithm("(1+1) EA", "(1+1) EA with static strength.", [Strength], one_plus_one)
+OnePlusOne = EvolutionaryAlgorithm("(1+1) EA", [Strength], one_plus_one)
 evolutionary_algorithms.append(OnePlusOne)
 
 # Creation of the SD(1+1) EA
 # R -> it is used to control the probability of failing to find an improvement at the "right" strength
 # R should be of the size of the image of the fitness function,
 # If the image of the fitness function is unknown, R should have a value of at least the problem size
-R = Parameter("R", "integer", "size", float('inf'))
-SDOnePlusOne = EvolutionaryAlgorithm("SD-(1+1) EA", "(1+1) EA with stagnation detection", [R], sd_one_plus_one)
+paramR = Parameter("R", "integer", "size", float('inf'))
+SDOnePlusOne = EvolutionaryAlgorithm("SD-(1+1) EA", [paramR], sd_one_plus_one)
 evolutionary_algorithms.append(SDOnePlusOne)
 
 # Creation of the SASD-(1+lambda) EA
 # Lambda -> Number of offsprings created from the parent
-R = Parameter("R", "integer", "size", float('inf'))
+paramR = Parameter("R", "integer", "size", float('inf'))
 Initial_Strength = Parameter("initial strength", "integer", 1, "size")
 Lambda = Parameter("Lambda", "integer", 0, float('inf'))
-SASDOnePlusLambda = EvolutionaryAlgorithm("SASD-(1+lambda) EA",
-                                          "(1+lambda) EA with two-rate standard bit mutation and stagnation detection",
-                                          [R, Initial_Strength, Lambda],
-                                          sasd_one_plus_lambda)
+SASDOnePlusLambda = EvolutionaryAlgorithm("SASD-(1+lambda) EA", [paramR, Initial_Strength, Lambda], sasd_one_plus_lambda)
 evolutionary_algorithms.append(SASDOnePlusLambda)
 
 

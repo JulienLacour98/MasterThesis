@@ -1,11 +1,12 @@
+import math
+
 from Parameter import *
 
 
 class FitnessFunction:
 
-    def __init__(self, name, description, parameters, function, function_maximum):
+    def __init__(self, name, parameters, function, function_maximum):
         self.name = name
-        self.description = description
         self.parameters = parameters
         self.function = function
         self.function_maximum = function_maximum
@@ -83,38 +84,63 @@ def jump_offset_spike_m_maximum(parameters, size):
     return size + int(parameters[0]) + 1
 
 
+# Definition of the Cliff function
+def cliff_d(parameters, size, bit_string):
+    d = int(parameters[0])
+    norm = bit_string.count('1')
+    if norm <= size - d:
+        return norm
+    else:
+        return norm - d + 1/2
+
+
+# Function returning the maximum of the Cliff function
+def cliff_d_maximum(parameters, size):
+    d = int(parameters[0])
+    return size - d + 1/2
+
+
+# Definition of the Hurdle function
+def hurdle_w(parameters, size, bit_string):
+    w = int(parameters[0])
+    z = bit_string.count('0')
+    r = z % w
+    return - math.ceil(z/w) - r/w
+
+
+# Function returning the maximum of the Hurdle function
+def hurdle_w_maximum(parameters, size):
+    return 0
+
+
 # List containing every fitness functions
 fitness_functions = []
 
 # Creation of OneMax
-OneMax = FitnessFunction("OneMax", "Returns the number of ones in the bit string.", [], one_max, one_max_maximum)
+OneMax = FitnessFunction("OneMax", [], one_max, one_max_maximum)
 fitness_functions.append(OneMax)
 
 # Creation of Jump
 gap_m = Parameter("m", "integer", 0, "size")
-JumpM = FitnessFunction("Jump_m",
-                        "Function with a local minimum followed by a gap of size m and then the global maximum.",
-                        [gap_m],
-                        jump_m,
-                        jump_m_maximum)
+JumpM = FitnessFunction("Jump_m", [gap_m], jump_m, jump_m_maximum)
 fitness_functions.append(JumpM)
 
 # Creation of JumpOffset
 gap_m = Parameter("m", "integer", 0, "size")
-JumpOffsetM = FitnessFunction("JumpOffset_m",
-                              "Function with a local minimum followed by a gap of size m and then a ramp going to "
-                              "the global maximum.",
-                              [gap_m],
-                              jump_offset_m,
-                              jump_offset_m_maximum)
+JumpOffsetM = FitnessFunction("JumpOffset_m", [gap_m], jump_offset_m, jump_offset_m_maximum)
 fitness_functions.append(JumpOffsetM)
 
 # Creation of JumpOffsetSpike
 gap_m = Parameter("m", "integer", 0, "size")
-JumpOffsetSpikeM = FitnessFunction("JumpOffsetSpike_m",
-                                   "Function with a local minimum followed by a gap of size m with the global optimum "
-                                   "in the middle then a ramp going to.",
-                                   [gap_m],
-                                   jump_offset_spike_m,
-                                   jump_offset_spike_m_maximum)
+JumpOffsetSpikeM = FitnessFunction("JumpOffsetSpike_m", [gap_m], jump_offset_spike_m, jump_offset_spike_m_maximum)
 fitness_functions.append(JumpOffsetSpikeM)
+
+# Creation of Cliff
+gap_d = Parameter("d", "integer", 0, "size")
+CliffD = FitnessFunction("Cliff_d", [gap_d], cliff_d, cliff_d_maximum)
+fitness_functions.append(CliffD)
+
+# Creation of Hurdle
+param_w = Parameter("w", "integer", 0, float('inf'))
+HurdleW = FitnessFunction("Hurdle_w", [param_w], hurdle_w, hurdle_w_maximum)
+fitness_functions.append(HurdleW)
