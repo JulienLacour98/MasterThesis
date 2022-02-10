@@ -38,7 +38,7 @@ class BitString:
             new_string += "1"
             i += 1
         else:
-            raise Exception("Can't add any one to the full only ones string")
+            raise Exception("Can't add any one to the only ones string")
         for j in range(i, len(self.string)):
             new_string += self.string[j]
         self.string = new_string
