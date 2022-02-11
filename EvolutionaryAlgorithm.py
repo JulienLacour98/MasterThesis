@@ -182,36 +182,88 @@ def sasd_one_plus_lambda(parameters, size, fitness_function, fitness_parameters)
     return bit_string, iterations
 
 
-def sd_rls(parameters, size, fitness_function, fitness_parameters):
+def sd_rls_r(parameters, size, fitness_function, fitness_parameters):
     R = int(parameters[0])
     bit_string = BitString(size)
     fitness_value = fitness_function.result(fitness_parameters, size, bit_string)
     iterations = 1
     fitness_maximum = fitness_function.maximum(fitness_parameters, size)
     found_maximum = (fitness_value == fitness_maximum)
-    u = 0
+    r = 1
     s = 1
+    u = 0
     while not found_maximum:
         new_bit_string = bit_string.create_offspring_s(s)
         new_fitness_value = fitness_function.result(fitness_parameters, size, new_bit_string)
         iterations += 1
-        u = u + 1
+        u += 1
         if new_fitness_value > fitness_value:
             bit_string = new_bit_string
             fitness_value = new_fitness_value
             found_maximum = (fitness_value == fitness_maximum)
-            new_s = 1
+            r = 1
+            s = 1
             u = 0
-        elif new_fitness_value == fitness_value and s == 1:
+        elif new_fitness_value == fitness_value and r == 1:
             bit_string = new_bit_string
             fitness_value = new_fitness_value
             found_maximum = (fitness_value == fitness_maximum)
         if u > math.comb(size, s) * math.log(R):
-            new_s = min(s + 1, size)
+            if s == 1:
+                if r < size/2:
+                    r += 1
+                else:
+                    r = size
+                s = r
+            else:
+                s += -1
             u = 0
-        else:
-            new_s = s
-        s = new_s
+    return bit_string, iterations
+
+
+def sd_rls_m(parameters, size, fitness_function, fitness_parameters):
+    R = int(parameters[0])
+    bit_string = BitString(size)
+    fitness_value = fitness_function.result(fitness_parameters, size, bit_string)
+    iterations = 1
+    fitness_maximum = fitness_function.maximum(fitness_parameters, size)
+    found_maximum = (fitness_value == fitness_maximum)
+    r = 1
+    s = 1
+    u = 0
+    B = float('inf')
+    while not found_maximum:
+        new_bit_string = bit_string.create_offspring_s(s)
+        new_fitness_value = fitness_function.result(fitness_parameters, size, new_bit_string)
+        iterations += 1
+        u += 1
+        if new_fitness_value > fitness_value:
+            bit_string = new_bit_string
+            fitness_value = new_fitness_value
+            found_maximum = (fitness_value == fitness_maximum)
+            r = s
+            s = 1
+            if r > 1:
+                B = u / (math.log(size) * (r-1))
+            else:
+                B = float('inf')
+            u = 0
+        elif new_fitness_value == fitness_value and r == 1:
+            bit_string = new_bit_string
+            fitness_value = new_fitness_value
+            found_maximum = (fitness_value == fitness_maximum)
+        if u > min(B, math.comb(size, s) * math.log(R)):
+            if s == r:
+                if r < size/2:
+                    r += 1
+                else:
+                    r = size
+                s = 1
+            else:
+                s += 1
+                if s == r:
+                    B = float('inf')
+                u = 0
     return bit_string, iterations
 
 
@@ -240,10 +292,16 @@ Lambda = Parameter("Lambda", "integer", 0, float('inf'))
 SASDOnePlusLambda = EvolutionaryAlgorithm("SASD-(1+lambda) EA", [paramR, Initial_Strength, Lambda], sasd_one_plus_lambda)
 evolutionary_algorithms.append(SASDOnePlusLambda)
 
-# Creation of the SD-RLS
+# Creation of the SD-RLS_r
 paramR = Parameter("R", "integer", "size", float('inf'))
-SDRLS = EvolutionaryAlgorithm("SD-RLS", [paramR], sd_rls)
-evolutionary_algorithms.append(SDRLS)
+SDRLSR = EvolutionaryAlgorithm("SD-RLS_r", [paramR], sd_rls_r)
+evolutionary_algorithms.append(SDRLSR)
+
+# Creation of the SD-RLS_m
+paramR = Parameter("R", "integer", "size", float('inf'))
+SDRLSM = EvolutionaryAlgorithm("SD-RLS_m", [paramR], sd_rls_m)
+evolutionary_algorithms.append(SDRLSM)
+
 
 
 
