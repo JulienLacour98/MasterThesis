@@ -1,3 +1,4 @@
+# Function that returns the element from the array chosen by the user
 def choose_element(name, array, size):
     print("")
     print(name + ":")
@@ -31,6 +32,7 @@ def choose_element(name, array, size):
     return element, element_parameters
 
 
+# Function that returns the element from the array chosen by the user
 def choose_integer(name, mini, maxi):
     print("")
     chosen = False

@@ -1,16 +1,25 @@
+from Constraint import *
+
+
 class Parameter:
 
-    def __init__(self, name, parameter_type, min_value, max_value):
+    def __init__(self, name, parameter_type, min_value, max_value, constraints):
         self.name = name
         self.parameter_type = parameter_type
         self.min_value = min_value
         self.max_value = max_value
+        self.constraints = constraints
 
     # Checking that the value is of the right type and that it is in between the min and max values
     def is_value_valid(self, value):
         if self.parameter_type == "integer":
             if value.isnumeric() and self.min_value <= int(value) <= self.max_value:
-                return True
+                valid = True
+                for constraint in self.constraints:
+                    if not constraint.check_condition(value):
+                        print(constraint.description)
+                        valid = False
+                return valid
             else:
                 print("The value has to be an integer between " + str(self.min_value) + " and " + str(self.max_value))
                 return False

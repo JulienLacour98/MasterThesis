@@ -56,6 +56,7 @@ def run_once():
     problem_size = choose_problem_size()
     evolutionary_algorithm, algorithm_parameters = choose_evolutionary_algorithm(problem_size)
     fitness_function, fitness_parameters = choose_fitness_function(problem_size)
+    iterations, timer = evolutionary_algorithm.solve(algorithm_parameters, problem_size, fitness_function, fitness_parameters)
     print("")
     print("\nYou chose the following evolutionary algorithm: " + evolutionary_algorithm.name)
     print("The maximum of " + fitness_function.name
@@ -63,9 +64,7 @@ def run_once():
           + " is: "
           + str(fitness_function.maximum(fitness_parameters, problem_size)))
 
-    print("The algorithm ran in "
-          + str(evolutionary_algorithm.solve(algorithm_parameters, problem_size, fitness_function, fitness_parameters))
-          + " iterations.")
+    print("The algorithm ran in " + str(iterations) + " iterations and " + str(round(timer, 2)) + " seconds.")
 
 
 def run_n_times():

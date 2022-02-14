@@ -2,6 +2,7 @@ from BitString import *
 from Parameter import *
 import math
 import numpy as np
+import time
 
 
 class EvolutionaryAlgorithm:
@@ -18,8 +19,10 @@ class EvolutionaryAlgorithm:
 
     # Solve a fitness function with the algorithm and returns the number of iterations
     def solve(self, parameters, size, fitness_function, fitness_parameters):
+        t1 = time.time()
         bit_string, iterations = self.algorithm(parameters, size, fitness_function, fitness_parameters)
-        return iterations
+        t2 = time.time()
+        return iterations, t2 - t1
 
 
 # Algorithm for the (1+1) EA
@@ -272,7 +275,7 @@ evolutionary_algorithms = []
 
 # Creation of the (1+1) EA
 # Strength -> Every bit if flipped with a probability of strength/size
-Strength = Parameter("strength", "integer", 1, "size")
+Strength = Parameter("strength", "integer", 1, "size", [])
 OnePlusOne = EvolutionaryAlgorithm("(1+1) EA", [Strength], one_plus_one)
 evolutionary_algorithms.append(OnePlusOne)
 
@@ -280,25 +283,25 @@ evolutionary_algorithms.append(OnePlusOne)
 # R -> it is used to control the probability of failing to find an improvement at the "right" strength
 # R should be of the size of the image of the fitness function,
 # If the image of the fitness function is unknown, R should have a value of at least the problem size
-paramR = Parameter("R", "integer", "size", float('inf'))
+paramR = Parameter("R", "integer", "size", float('inf'), [])
 SDOnePlusOne = EvolutionaryAlgorithm("SD-(1+1) EA", [paramR], sd_one_plus_one)
 evolutionary_algorithms.append(SDOnePlusOne)
 
 # Creation of the SASD-(1+lambda) EA
 # Lambda -> Number of offsprings created from the parent
-paramR = Parameter("R", "integer", "size", float('inf'))
-Initial_Strength = Parameter("initial strength", "integer", 1, "size")
-Lambda = Parameter("Lambda", "integer", 0, float('inf'))
+paramR = Parameter("R", "integer", "size", float('inf'), [])
+Initial_Strength = Parameter("initial strength", "integer", 1, "size", [])
+Lambda = Parameter("Lambda", "integer", 0, float('inf'), [])
 SASDOnePlusLambda = EvolutionaryAlgorithm("SASD-(1+lambda) EA", [paramR, Initial_Strength, Lambda], sasd_one_plus_lambda)
 evolutionary_algorithms.append(SASDOnePlusLambda)
 
 # Creation of the SD-RLS_r
-paramR = Parameter("R", "integer", "size", float('inf'))
+paramR = Parameter("R", "integer", "size", float('inf'), [])
 SDRLSR = EvolutionaryAlgorithm("SD-RLS_r", [paramR], sd_rls_r)
 evolutionary_algorithms.append(SDRLSR)
 
 # Creation of the SD-RLS_m
-paramR = Parameter("R", "integer", "size", float('inf'))
+paramR = Parameter("R", "integer", "size", float('inf'), [])
 SDRLSM = EvolutionaryAlgorithm("SD-RLS_m", [paramR], sd_rls_m)
 evolutionary_algorithms.append(SDRLSM)
 

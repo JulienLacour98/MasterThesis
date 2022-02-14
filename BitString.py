@@ -1,5 +1,6 @@
 import random
 
+
 class BitString:
 
     # Generates a random bit string of length "size
