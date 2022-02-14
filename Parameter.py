@@ -32,3 +32,4 @@ class Parameter:
             self.min_value = size
         if self.max_value == "size":
             self.max_value = size
+            

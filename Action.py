@@ -4,7 +4,7 @@ from utilities import *
 from matplotlib import pyplot as plt
 
 
-class Actions:
+class Action:
 
     def __init__(self, name, parameters, algorithm):
         self.name = name
@@ -88,15 +88,15 @@ def run_n_times():
 actions = []
 
 # Creation of Display Fitness
-DisplayFitness = Actions("Display graph of a fitness function", [], display_fitness)
+DisplayFitness = Action("Display graph of a fitness function", [], display_fitness)
 actions.append(DisplayFitness)
 
 # Creation of Run Once
-RunOnce = Actions("Run evolutionary algorithm on one fitness function ", [], run_once)
+RunOnce = Action("Run evolutionary algorithm on one fitness function ", [], run_once)
 actions.append(RunOnce)
 
 # Creation Run n Times
-RunNTimes = Actions("Run evolutionary algorithm n times on one fitness function", [], run_n_times)
+RunNTimes = Action("Run evolutionary algorithm n times on one fitness function", [], run_n_times)
 actions.append(RunNTimes)
 
 

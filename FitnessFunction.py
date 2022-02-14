@@ -1,5 +1,4 @@
 import math
-
 from Parameter import *
 
 
@@ -131,7 +130,7 @@ JumpOffsetM = FitnessFunction("JumpOffset_m", [gap_m], jump_offset_m, jump_offse
 fitness_functions.append(JumpOffsetM)
 
 # Creation of JumpOffsetSpike
-gap_m = Parameter("m", "integer", 2, "size", [multiple_of_two])
+gap_m = Parameter("m", "integer", 2, "size", [M2])
 JumpOffsetSpikeM = FitnessFunction("JumpOffsetSpike_m", [gap_m], jump_offset_spike_m, jump_offset_spike_m_maximum)
 fitness_functions.append(JumpOffsetSpikeM)
 

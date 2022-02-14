@@ -17,8 +17,8 @@ def multiple_of_4(element):
     return int(element) % 4 == 0
 
 
-multiple_of_two = Constraint("M2", "This integer has to be a multiple of 2", multiple_of_2)
-multiple_of_four = Constraint("M4", "This integer has to be a multiple of 4", multiple_of_4)
+M2 = Constraint("M2", "This integer has to be a multiple of 2", multiple_of_2)
+M4 = Constraint("M4", "This integer has to be a multiple of 4", multiple_of_4)
 
 
 
