@@ -1,15 +1,18 @@
+from matplotlib import pyplot as plt
+
 from EvolutionaryAlgorithm import *
 from FitnessFunction import *
 from utilities import *
-from matplotlib import pyplot as plt
 
 
 class Action:
 
-    def __init__(self, name, parameters, algorithm):
+    def __init__(self, name, description,  parameters, algorithm):
         self.name = name
+        self.description = description
         self.parameters = parameters
         self.algorithm = algorithm
+        actions.append(self)
 
     # Update the min and max of the parameters if they depend on the size of the problem
     def update_parameters(self, size):
@@ -88,16 +91,13 @@ def run_n_times():
 actions = []
 
 # Creation of Display Fitness
-DisplayFitness = Action("Display graph of a fitness function", [], display_fitness)
-actions.append(DisplayFitness)
+DisplayFitness = Action("DF", "Display graph of a fitness function", [], display_fitness, )
 
 # Creation of Run Once
-RunOnce = Action("Run evolutionary algorithm on one fitness function ", [], run_once)
-actions.append(RunOnce)
+RunOnce = Action("R1", "Run evolutionary algorithm on one fitness function ", [], run_once, )
 
 # Creation Run n Times
-RunNTimes = Action("Run evolutionary algorithm n times on one fitness function", [], run_n_times)
-actions.append(RunNTimes)
+RunNTimes = Action("RN", "Run evolutionary algorithm n times on one fitness function", [], run_n_times, )
 
 
 

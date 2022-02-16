@@ -9,6 +9,8 @@ class FitnessFunction:
         self.parameters = parameters
         self.function = function
         self.function_maximum = function_maximum
+        fitness_functions.append(self)
+        fitness_functions_names.append(self.name)
 
     # Update the min and max of the parameters if they depend on the size of the problem
     def update_parameters(self, size):
@@ -114,32 +116,27 @@ def hurdle_w_maximum(parameters, size):
 
 # List containing every fitness functions
 fitness_functions = []
+fitness_functions_names = []
 
 # Creation of OneMax
 OneMax = FitnessFunction("OneMax", [], one_max, one_max_maximum)
-fitness_functions.append(OneMax)
 
 # Creation of Jump
 gap_m = Parameter("m", "integer", 2, "size", [])
 JumpM = FitnessFunction("Jump_m", [gap_m], jump_m, jump_m_maximum)
-fitness_functions.append(JumpM)
 
 # Creation of JumpOffset
 gap_m = Parameter("m", "integer", 2, "size", [])
 JumpOffsetM = FitnessFunction("JumpOffset_m", [gap_m], jump_offset_m, jump_offset_m_maximum)
-fitness_functions.append(JumpOffsetM)
 
 # Creation of JumpOffsetSpike
 gap_m = Parameter("m", "integer", 2, "size", [M2])
 JumpOffsetSpikeM = FitnessFunction("JumpOffsetSpike_m", [gap_m], jump_offset_spike_m, jump_offset_spike_m_maximum)
-fitness_functions.append(JumpOffsetSpikeM)
 
 # Creation of Cliff
 gap_d = Parameter("d", "integer", 1, "size", [])
 CliffD = FitnessFunction("Cliff_d", [gap_d], cliff_d, cliff_d_maximum)
-fitness_functions.append(CliffD)
 
 # Creation of Hurdle
 param_w = Parameter("w", "integer", 1, float('inf'), [])
 HurdleW = FitnessFunction("Hurdle_w", [param_w], hurdle_w, hurdle_w_maximum)
-fitness_functions.append(HurdleW)
