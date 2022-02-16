@@ -3,9 +3,10 @@ from Constraint import *
 
 class Parameter:
 
-    def __init__(self, name, parameter_type, min_value, max_value, constraints):
+    def __init__(self, name, parameter_type, default_value, min_value, max_value, constraints):
         self.name = name
         self.parameter_type = parameter_type
+        self.default_value = default_value
         self.min_value = min_value
         self.max_value = max_value
         self.constraints = constraints

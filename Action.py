@@ -2,16 +2,15 @@ from matplotlib import pyplot as plt
 
 from EvolutionaryAlgorithm import *
 from FitnessFunction import *
-from utilities import *
+from Utilities import *
 
 
 class Action:
 
-    def __init__(self, name, description,  parameters, algorithm):
+    def __init__(self, name, description,  parameters):
         self.name = name
         self.description = description
         self.parameters = parameters
-        self.algorithm = algorithm
         actions.append(self)
 
     # Update the min and max of the parameters if they depend on the size of the problem
@@ -33,26 +32,6 @@ def choose_evolutionary_algorithm(problem_size):
 # Selection of a fitness function
 def choose_fitness_function(problem_size):
     return choose_element("Fitness Function", fitness_functions, problem_size)
-
-
-def display_fitness():
-    problem_size = choose_problem_size()
-    fitness_function, fitness_parameters = choose_fitness_function(problem_size)
-    bit_string = BitString(problem_size)
-    bit_string.only_zeros()
-    x = np.empty(problem_size+1)
-    y = np.empty(problem_size+1)
-    x[0] = 0
-    y[0] = fitness_function.result(fitness_parameters, problem_size, bit_string)
-    for i in range(problem_size):
-        bit_string.add_one_one()
-        x[i+1] = i + 1
-        y[i+1] = fitness_function.result(fitness_parameters, problem_size, bit_string)
-    plt.title(fitness_function.name)
-    plt.xlabel("|x|")
-    plt.ylabel("f(x)")
-    plt.plot(x, y, '.')
-    plt.show()
 
 
 def run_once():
@@ -91,13 +70,13 @@ def run_n_times():
 actions = []
 
 # Creation of Display Fitness
-DisplayFitness = Action("DF", "Display graph of a fitness function", [], display_fitness, )
+DisplayFitness = Action("DF", "Display graph of a fitness function", [])
 
 # Creation of Run Once
-RunOnce = Action("R1", "Run evolutionary algorithm on one fitness function ", [], run_once, )
+RunOnce = Action("R1", "Run evolutionary algorithm on one fitness function ", [])
 
 # Creation Run n Times
-RunNTimes = Action("RN", "Run evolutionary algorithm n times on one fitness function", [], run_n_times, )
+RunNTimes = Action("RN", "Run evolutionary algorithm n times on one fitness function", [])
 
 
 

@@ -21,14 +21,14 @@ class MainInterface(tk.Tk):
 
         # initialising frames to an empty array
         self.frames = {}
+        frame = StartPage(StartPage, container, self)
+        frame.grid(row=0, column=0, sticky="nsew")
+        self.frames[StartPage] = frame
 
-        for i in range(len(interfaces)):
-            interface = interfaces[i]
-            if isinstance(interface, ActionInterface):
-                frame = interface.class_name(interface.class_name, interface.action, container, self)
-            else:
-                frame = interface.class_name(interface.class_name, container, self)
-            self.frames[interface.class_name] = frame
+        for action in actions:
+            class_name = globals()[action.name]
+            frame = class_name(class_name, container, self, action)
+            self.frames[class_name] = frame
             frame.grid(row=0, column=0, sticky="nsew")
         self.show_frame(StartPage)
 
