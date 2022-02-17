@@ -22,7 +22,8 @@ class BitString:
         new_bit_string.string = new_string
         return new_bit_string
 
-    # Flip s bits uniformly // TODO- Check correctness (used from "Algorithmic Techniques for Modern Data Models")
+    # TODO - Check correctness(used from "Algorithmic Techniques for Modern Data Models")
+    # Flip s bits uniforml
     def create_offspring_s(self, s):
         n = len(self.string)
         # Reservoir sampling algorithm
@@ -43,12 +44,15 @@ class BitString:
         else:
             raise Exception("It is not possible to flip more than the number of bits in the string")
 
+    # Change bitstring to only 0s
     def only_zeros(self):
         self.string = "0" * len(self.string)
 
+    # Change bitstring to only 1s
     def only_ones(self):
         self.string = "1" * len(self.string)
 
+    # Change the first 0 in the bitstring to 1
     def add_one_one(self):
         new_string = ""
         i = 0

@@ -19,19 +19,30 @@ class MainInterface(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        # initialising frames to an empty array
+        # initialising frames to an empty set
         self.frames = {}
         frame = StartPage(StartPage, container, self)
         frame.grid(row=0, column=0, sticky="nsew")
         self.frames[StartPage] = frame
 
+        # Create a frame for each action
         for action in actions:
             class_name = globals()[action.name]
-            frame = class_name(class_name, container, self, action)
+            # Set default values for problem size and number of iterations
+            problem_size = IntVar()
+            problem_size.set(100)
+            iterations = IntVar()
+            iterations.set(100)
+            # Create the action frame
+            frame = class_name(class_name, container, self, action,
+                               problem_size, iterations,
+                               evolutionary_algorithms[0], default_parameters(evolutionary_algorithms[0]),
+                               fitness_functions[0], default_parameters(fitness_functions[0]))
             self.frames[class_name] = frame
             frame.grid(row=0, column=0, sticky="nsew")
         self.show_frame(StartPage)
 
+    # Show the selected frame
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()

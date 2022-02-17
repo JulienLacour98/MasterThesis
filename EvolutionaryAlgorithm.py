@@ -20,11 +20,11 @@ class EvolutionaryAlgorithm:
             parameter.update_parameter(size)
 
     # Solve a fitness function with the algorithm and returns the number of iterations
-    def solve(self, parameters, size, fitness_function, fitness_parameters):
+    def solve(self, evolutionary_parameters, size, fitness_function, fitness_parameters):
         t1 = time.time()
-        bit_string, iterations = self.algorithm(parameters, size, fitness_function, fitness_parameters)
+        bit_string, iterations, x, y = self.algorithm(evolutionary_parameters, size, fitness_function, fitness_parameters)
         t2 = time.time()
-        return bit_string.string, iterations, t2 - t1
+        return bit_string.string, iterations, t2 - t1, x, y
 
 
 # Algorithm for the (1+1) EA
@@ -35,6 +35,8 @@ def one_plus_one(parameters, size, fitness_function, fitness_parameters):
     # Compute the value of the fitness function for the previously created bit string
     fitness_value = fitness_function.result(fitness_parameters, size, bit_string)
     iterations = 1
+    x = [1]
+    y = [fitness_value]
     # Compute the maximum of the function in order to know when this value is reached
     fitness_maximum = fitness_function.maximum(fitness_parameters, size)
     # found_maximum is true if the maximum has been reached
@@ -49,7 +51,9 @@ def one_plus_one(parameters, size, fitness_function, fitness_parameters):
             bit_string = new_bit_string
             fitness_value = new_fitness_value
             found_maximum = (fitness_value == fitness_maximum)
-    return bit_string, iterations
+            x.append(iterations)
+            y.append(fitness_value)
+    return bit_string, iterations, x, y
 
 
 # Algorithm for the SD(1+1) EA
@@ -60,6 +64,8 @@ def sd_one_plus_one(parameters, size, fitness_function, fitness_parameters):
     # Compute the value of the fitness function for the previously created bit string
     fitness_value = fitness_function.result(fitness_parameters, size, bit_string)
     iterations = 1
+    x = [1]
+    y = [fitness_value]
     # Compute the maximum of the function in order to know when this value is reached
     fitness_maximum = fitness_function.maximum(fitness_parameters, size)
     # found_maximum is true if the maximum has been reached
@@ -79,6 +85,8 @@ def sd_one_plus_one(parameters, size, fitness_function, fitness_parameters):
             bit_string = new_bit_string
             fitness_value = new_fitness_value
             found_maximum = (fitness_value == fitness_maximum)
+            x.append(iterations)
+            y.append(fitness_value)
             # The strength is reset to 1 and the number of iterations to 0
             new_r = 1
             u = 0
@@ -87,6 +95,8 @@ def sd_one_plus_one(parameters, size, fitness_function, fitness_parameters):
             bit_string = new_bit_string
             fitness_value = new_fitness_value
             found_maximum = (fitness_value == fitness_maximum)
+            x.append(iterations)
+            y.append(fitness_value)
         # After too many iterations, the strength is increased and the number of iterations reset to 0
         if u > 2 * pow(math.exp(1) * size / r, r) * math.log(size * R):
             # TODO - Does this need to be rounded to the previous/next integer if size is odd ?
@@ -95,7 +105,7 @@ def sd_one_plus_one(parameters, size, fitness_function, fitness_parameters):
         else:
             new_r = r
         r = new_r
-    return bit_string, iterations
+    return bit_string, iterations, x, y
 
 
 def sasd_one_plus_lambda(parameters, size, fitness_function, fitness_parameters):
@@ -107,6 +117,8 @@ def sasd_one_plus_lambda(parameters, size, fitness_function, fitness_parameters)
     # Compute the value of the fitness function for the previously created bit string
     fitness_value = fitness_function.result(fitness_parameters, size, bit_string)
     iterations = 1
+    x = [1]
+    y = [fitness_value]
     # Compute the maximum of the function in order to know when this value is reached
     fitness_maximum = fitness_function.maximum(fitness_parameters, size)
     # found_maximum is true if the maximum has been reached
@@ -136,6 +148,8 @@ def sasd_one_plus_lambda(parameters, size, fitness_function, fitness_parameters)
                 bit_string = new_bit_string
                 fitness_value = new_fitness_value
                 found_maximum = (fitness_value == fitness_maximum)
+                x.append(iterations)
+                y.append(fitness_value)
                 new_r = r_init
                 g = False
                 u = 0
@@ -169,6 +183,8 @@ def sasd_one_plus_lambda(parameters, size, fitness_function, fitness_parameters)
                 bit_string = new_bit_string
                 fitness_value = new_fitness_value
                 found_maximum = (fitness_value == fitness_maximum)
+                x.append(iterations)
+                y.append(fitness_value)
             if random.random() < 1/2:
                 # TODO - Is this correct ?
                 r = r
@@ -184,7 +200,7 @@ def sasd_one_plus_lambda(parameters, size, fitness_function, fitness_parameters)
                 g = True
                 u = 0
         r = new_r
-    return bit_string, iterations
+    return bit_string, iterations, x, y
 
 
 def sd_rls_r(parameters, size, fitness_function, fitness_parameters):
@@ -192,6 +208,8 @@ def sd_rls_r(parameters, size, fitness_function, fitness_parameters):
     bit_string = BitString(size)
     fitness_value = fitness_function.result(fitness_parameters, size, bit_string)
     iterations = 1
+    x = [1]
+    y = [fitness_value]
     fitness_maximum = fitness_function.maximum(fitness_parameters, size)
     found_maximum = (fitness_value == fitness_maximum)
     r = 1
@@ -206,6 +224,8 @@ def sd_rls_r(parameters, size, fitness_function, fitness_parameters):
             bit_string = new_bit_string
             fitness_value = new_fitness_value
             found_maximum = (fitness_value == fitness_maximum)
+            x.append(iterations)
+            y.append(fitness_value)
             r = 1
             s = 1
             u = 0
@@ -213,6 +233,8 @@ def sd_rls_r(parameters, size, fitness_function, fitness_parameters):
             bit_string = new_bit_string
             fitness_value = new_fitness_value
             found_maximum = (fitness_value == fitness_maximum)
+            x.append(iterations)
+            y.append(fitness_value)
         if u > math.comb(size, s) * math.log(R):
             if s == 1:
                 if r < size/2:
@@ -223,7 +245,7 @@ def sd_rls_r(parameters, size, fitness_function, fitness_parameters):
             else:
                 s += -1
             u = 0
-    return bit_string, iterations
+    return bit_string, iterations, x, y
 
 
 def sd_rls_m(parameters, size, fitness_function, fitness_parameters):
@@ -231,6 +253,8 @@ def sd_rls_m(parameters, size, fitness_function, fitness_parameters):
     bit_string = BitString(size)
     fitness_value = fitness_function.result(fitness_parameters, size, bit_string)
     iterations = 1
+    x = [1]
+    y = [fitness_value]
     fitness_maximum = fitness_function.maximum(fitness_parameters, size)
     found_maximum = (fitness_value == fitness_maximum)
     r = 1
@@ -246,6 +270,8 @@ def sd_rls_m(parameters, size, fitness_function, fitness_parameters):
             bit_string = new_bit_string
             fitness_value = new_fitness_value
             found_maximum = (fitness_value == fitness_maximum)
+            x.append(iterations)
+            y.append(fitness_value)
             r = s
             s = 1
             if r > 1:
@@ -257,6 +283,8 @@ def sd_rls_m(parameters, size, fitness_function, fitness_parameters):
             bit_string = new_bit_string
             fitness_value = new_fitness_value
             found_maximum = (fitness_value == fitness_maximum)
+            x.append(iterations)
+            y.append(fitness_value)
         if u > min(B, math.comb(size, s) * math.log(R)):
             if s == r:
                 if r < size/2:
@@ -269,7 +297,7 @@ def sd_rls_m(parameters, size, fitness_function, fitness_parameters):
                 if s == r:
                     B = float('inf')
                 u = 0
-    return bit_string, iterations
+    return bit_string, iterations, x, y
 
 
 # TODO- Update default values

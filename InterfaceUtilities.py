@@ -8,6 +8,7 @@ from EvolutionaryAlgorithm import *
 from FitnessFunction import *
 
 
+# Create frame with return button if not the main page
 def frame_creation(root, title, start_page=False):
     # Creation of the frame
     tk.Frame.__init__(root, root.parent)
@@ -24,6 +25,7 @@ def frame_creation(root, title, start_page=False):
         button.grid(row=0, column=10, padx=10, pady=10)
 
 
+# Return the evolutionary algorithm with the input name
 def find_evolutionary(evolutionary_name):
     for evolutionary_algorithm in evolutionary_algorithms:
         if evolutionary_algorithm.name == evolutionary_name:
@@ -31,6 +33,7 @@ def find_evolutionary(evolutionary_name):
     raise Exception("Evolutionary algorithm not found")
 
 
+# Return the fitness function with the input name
 def find_fitness(fitness_name):
     for fitness_function in fitness_functions:
         if fitness_function.name == fitness_name:
@@ -38,9 +41,16 @@ def find_fitness(fitness_name):
     raise Exception("Fitness function not found")
 
 
-def build_graph(root, x, y, row, column):
-    fig = Figure(figsize=(5, 4), dpi=100)
-    fig.add_subplot(111).plot(x, y, '.')
+# Build a graph with the x and y values
+def build_graph(root, x, y, row, column, title, x_label, y_label):
+    fig = Figure(figsize=(6, 4), dpi=100)
+    a = fig.add_subplot(111)
+
+    a.set_title(title)
+    a.set_xlabel(x_label)
+    a.set_ylabel(y_label)
+
+    a.plot(x, y, '.')
 
     canvas = FigureCanvasTkAgg(fig, root)
     canvas.draw()
@@ -51,5 +61,15 @@ def build_graph(root, x, y, row, column):
     toolbar = NavigationToolbar2Tk(canvas, toolbar_frame)
     toolbar.update()
     canvas.get_tk_widget().grid(row=row, column=column, padx=10, pady=10)
+
+
+# Return an array with the default value of the parameters of the element
+def default_parameters(element):
+    parameter_values = []
+    for parameter in element.parameters:
+        parameter_value = IntVar()
+        parameter_value.set(parameter.default_value)
+        parameter_values.append(parameter_value)
+    return parameter_values
 
 
