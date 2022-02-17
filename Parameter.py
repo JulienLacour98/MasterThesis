@@ -1,6 +1,3 @@
-from Constraint import *
-
-
 class Parameter:
 
     def __init__(self, name, parameter_type, default_value, min_value, max_value, constraints):

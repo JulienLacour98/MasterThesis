@@ -71,5 +71,3 @@ def default_parameters(element):
         parameter_value.set(parameter.default_value)
         parameter_values.append(parameter_value)
     return parameter_values
-
-

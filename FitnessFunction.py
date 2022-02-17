@@ -1,12 +1,15 @@
 import math
+
 from Parameter import *
+from Constraint import *
 
 
 class FitnessFunction:
 
-    def __init__(self, name, parameters, function, function_maximum):
+    def __init__(self, name, parameters, size_constraints, function, function_maximum):
         self.name = name
         self.parameters = parameters
+        self.size_constraints = size_constraints
         self.function = function
         self.function_maximum = function_maximum
         fitness_functions.append(self)
@@ -116,24 +119,24 @@ fitness_functions = []
 fitness_function_names = []
 
 # Creation of OneMax
-OneMax = FitnessFunction("OneMax", [], one_max, one_max_maximum)
+OneMax = FitnessFunction("OneMax", [], [], one_max, one_max_maximum)
 
 # Creation of Jump
-gap_m = Parameter("m", "integer", 3, 1, "size", [])
-JumpM = FitnessFunction("Jump_m", [gap_m], jump_m, jump_m_maximum)
+gap_m = Parameter("m", "integer", 3, 2, "size", [])
+JumpM = FitnessFunction("Jump_m", [gap_m], [], jump_m, jump_m_maximum)
 
 # Creation of JumpOffset
-gap_m = Parameter("m", "integer", 3, 1, "size", [])
-JumpOffsetM = FitnessFunction("JumpOffset_m", [gap_m], jump_offset_m, jump_offset_m_maximum)
+gap_m = Parameter("m", "integer", 3, 2, "size", [])
+JumpOffsetM = FitnessFunction("JumpOffset_m", [gap_m], [M4], jump_offset_m, jump_offset_m_maximum)
 
 # Creation of JumpOffsetSpike
 gap_m = Parameter("m", "integer", 4, 2, "size", [M2])
-JumpOffsetSpikeM = FitnessFunction("JumpOffsetSpike_m", [gap_m], jump_offset_spike_m, jump_offset_spike_m_maximum)
+JumpOffsetSpikeM = FitnessFunction("JumpOffsetSpike_m", [gap_m], [M4], jump_offset_spike_m, jump_offset_spike_m_maximum)
 
 # Creation of Cliff
-gap_d = Parameter("d", "integer", 3, 1, "size", [])
-CliffD = FitnessFunction("Cliff_d", [gap_d], cliff_d, cliff_d_maximum)
+gap_d = Parameter("d", "integer", 3, 2, "size", [])
+CliffD = FitnessFunction("Cliff_d", [gap_d], [], cliff_d, cliff_d_maximum)
 
 # Creation of Hurdle
 param_w = Parameter("w", "integer", 10, 1, float('inf'), [])
-HurdleW = FitnessFunction("Hurdle_w", [param_w], hurdle_w, hurdle_w_maximum)
+HurdleW = FitnessFunction("Hurdle_w", [param_w], [], hurdle_w, hurdle_w_maximum)
