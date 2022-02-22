@@ -9,13 +9,20 @@ class Action:
 actions = []
 
 # Creation of Display Fitness
-DisplayFitness = Action("DF", "Display graph of a fitness function")
+DisplayFitness = Action("DF", "Display the graph of a fitness function")
 
 # Creation of Run Once
-RunOnce = Action("R1", "Run an evolutionary algorithm on a fitness function ")
+RunOnce = Action("R1", "Display a run of an evolutionary algorithm on a fitness function")
 
 # Creation Run n Times
-RunNTimes = Action("RN", "Run an evolutionary algorithm n times on a fitness function")
+RunNTimes = Action("RN",
+                   "Statistical analysis of an evolutionary algorithm on a fitness function and fixed problem size")
+
+# Creation run from n to m
+RunFromNtoM = Action("RNM",
+                     "Statistical analysis of an evolutionary algorithm on a fitness function "
+                     "for a range of problem size")
+
 
 
 

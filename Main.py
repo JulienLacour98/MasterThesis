@@ -30,14 +30,19 @@ class MainInterface(tk.Tk):
             class_name = globals()[action.name]
             # Set default values for problem size and number of iterations
             problem_size = IntVar()
-            problem_size.set(100)
+            problem_size.set(60)
+            problem_size_end = IntVar()
+            problem_size_end.set(120)
+            step = IntVar()
+            step.set(10)
             iterations = IntVar()
             iterations.set(100)
             # Create the action frame
             frame = class_name(class_name, container, self, action,
-                               problem_size, iterations,
-                               evolutionary_algorithms[0], default_parameters(evolutionary_algorithms[0]),
-                               fitness_functions[0], default_parameters(fitness_functions[0]))
+                               problem_size, problem_size_end, step, iterations,
+                               evolutionary_algorithms[0],
+                               default_parameters(evolutionary_algorithms[0], problem_size.get()),
+                               fitness_functions[0], default_parameters(fitness_functions[0], problem_size.get()))
             self.frames[class_name] = frame
             frame.grid(row=0, column=0, sticky="nsew")
         self.show_frame(StartPage)

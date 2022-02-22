@@ -1,3 +1,7 @@
+import math
+import numpy as np
+
+
 class Parameter:
 
     def __init__(self, name, parameter_type, default_value, min_value, max_value, constraints):
@@ -15,19 +19,26 @@ class Parameter:
                 valid = True
                 for constraint in self.constraints:
                     if not constraint.check_condition(value):
-                        print(constraint.description)
                         valid = False
                 return valid
             else:
-                print("The value has to be an integer between " + str(self.min_value) + " and " + str(self.max_value))
                 return False
         else:
             raise Exception("Unknown parameter's type")
 
-    # Update the min and max values of the parameter if it depends on the size of the problem
-    def update_parameter(self, size):
-        if self.min_value == "size":
-            self.min_value = size
-        if self.max_value == "size":
-            self.max_value = size
+
+# Update the min and max values of the parameter if it depends on the size of the problem
+def update_parameter(value, size):
+    if value == "size":
+        return size
+    elif value == "size^4":
+        return np.power(size, 4)
+    elif value == "log(size)":
+        return math.log(size)
+    elif value == "size/2":
+        return size/2
+    elif value == "size/4-1":
+        return size/4 - 1
+    else:
+        return value
             

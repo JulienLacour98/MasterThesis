@@ -15,14 +15,14 @@ def frame_creation(root, title, start_page=False):
 
     # Title of the page
     label = tk.Label(root, text=title, font=("Arial", 20))
-    label.grid(row=0, column=0, padx=10, pady=10)
+    label.grid(row=0, column=0, columnspan=3, padx=5, pady=5)
 
     # Add return button
     if start_page:
         # Button back to main page
         button = ttk.Button(root, text="Return to main page",
                             command=lambda: root.controller.show_frame(start_page))
-        button.grid(row=0, column=10, padx=10, pady=10)
+        button.grid(row=0, column=4, padx=5, pady=5)
 
 
 # Return the evolutionary algorithm with the input name
@@ -54,20 +54,20 @@ def build_graph(root, x, y, row, column, title, x_label, y_label):
 
     canvas = FigureCanvasTkAgg(fig, root)
     canvas.draw()
-    canvas.get_tk_widget().grid(row=row, column=column, padx=10, pady=10)
+    canvas.get_tk_widget().grid(row=row, column=column, padx=5, pady=5)
 
     toolbar_frame = Frame(root)
     toolbar_frame.grid(row=row+1, column=column)
     toolbar = NavigationToolbar2Tk(canvas, toolbar_frame)
     toolbar.update()
-    canvas.get_tk_widget().grid(row=row, column=column, padx=10, pady=10)
+    canvas.get_tk_widget().grid(row=row, column=column, padx=5, pady=5)
 
 
 # Return an array with the default value of the parameters of the element
-def default_parameters(element):
+def default_parameters(element, size):
     parameter_values = []
     for parameter in element.parameters:
         parameter_value = IntVar()
-        parameter_value.set(parameter.default_value)
+        parameter_value.set(update_parameter(parameter.default_value, size))
         parameter_values.append(parameter_value)
     return parameter_values

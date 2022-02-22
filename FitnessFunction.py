@@ -31,8 +31,6 @@ def one_max(parameters, size, bit_string):
 
 # Function returning the maximum of the OneMax function
 def one_max_maximum(parameters, size):
-    if size < 0:
-        raise Exception("Negative size")
     return size
 
 
@@ -111,8 +109,6 @@ def hurdle_w(parameters, size, bit_string):
 def hurdle_w_maximum(parameters, size):
     return 0
 
-# TODO - Update default values
-
 
 # List containing every fitness functions
 fitness_functions = []
@@ -122,21 +118,21 @@ fitness_function_names = []
 OneMax = FitnessFunction("OneMax", [], [], one_max, one_max_maximum)
 
 # Creation of Jump
-gap_m = Parameter("m", "integer", 3, 2, "size", [])
+gap_m = Parameter("m", "integer", 4, 2, "size", [])
 JumpM = FitnessFunction("Jump_m", [gap_m], [], jump_m, jump_m_maximum)
 
 # Creation of JumpOffset
-gap_m = Parameter("m", "integer", 3, 2, "size", [])
+gap_m = Parameter("m", "integer", 4, 2, "size/4-1", [])
 JumpOffsetM = FitnessFunction("JumpOffset_m", [gap_m], [M4], jump_offset_m, jump_offset_m_maximum)
 
 # Creation of JumpOffsetSpike
-gap_m = Parameter("m", "integer", 4, 2, "size", [M2])
+gap_m = Parameter("m", "integer", 4, 2, "size/4-1", [M2])
 JumpOffsetSpikeM = FitnessFunction("JumpOffsetSpike_m", [gap_m], [M4], jump_offset_spike_m, jump_offset_spike_m_maximum)
 
 # Creation of Cliff
-gap_d = Parameter("d", "integer", 3, 2, "size", [])
+gap_d = Parameter("d", "integer", 4, 1, "size", [])
 CliffD = FitnessFunction("Cliff_d", [gap_d], [], cliff_d, cliff_d_maximum)
 
 # Creation of Hurdle
-param_w = Parameter("w", "integer", 10, 1, float('inf'), [])
+param_w = Parameter("w", "integer", 4, 2, "size", [])
 HurdleW = FitnessFunction("Hurdle_w", [param_w], [], hurdle_w, hurdle_w_maximum)
