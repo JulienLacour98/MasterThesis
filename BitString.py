@@ -26,7 +26,7 @@ class BitString:
     # Flip s bits uniformly
     def create_offspring_s(self, s):
         n = len(self.string)
-        indexes = random.sample(np.arrange(0, n), s)
+        indexes = random.sample(list(np.arange(0, n)), s)
         new_string = ""
         for i in range(n):
             if i in indexes:

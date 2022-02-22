@@ -31,10 +31,10 @@ class Parameter:
 def update_parameter(value, size):
     if value == "size":
         return size
-    elif value == "size^4":
-        return np.power(size, 4)
+    elif value == "size^3":
+        return np.power(size, 3)
     elif value == "log(size)":
-        return math.log(size)
+        return math.ceil(math.log(size))
     elif value == "size/2":
         return size/2
     elif value == "size/4-1":

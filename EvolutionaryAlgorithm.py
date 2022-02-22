@@ -1,4 +1,5 @@
 import functools
+import math
 import time
 
 
@@ -6,7 +7,7 @@ from Parameter import *
 from Constraint import *
 from BitString import *
 
-# TODO - For parameter constraints, |Im(f)| is considered to be equal to the problem size,
+# TODO - For parameter constraints, |Im(f)| is considered to be inferior than n^3
 #  which is the case for most fitness functions atm
 
 
@@ -101,7 +102,7 @@ def sd_one_plus_one(parameters, n, fitness_function, fitness_parameters):
             x.append(iterations)
             y.append(fitness_value)
         # After too many iterations, the strength is increased and the number of iterations reset to 0
-        if u > 2 * pow(math.exp(1) * n / r, r) * math.log(n * R):
+        if u > np.power(n / r, r) * np.power(n / (n - r), n - r) * math.log(math.exp(1) * n * R):
             # TODO - Analyse the impact of rounding up
             new_r = min(r+1, n/2)
             u = 0
@@ -162,7 +163,7 @@ def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters):
                 g = False
                 u = 0
             else:
-                if u > 2 * pow(math.exp(1) * n / r, r) * math.log(n * int(R)) / lbd:
+                if u > np.power(n / r, r) * np.power(n / (n - r), n - r) * math.log(math.exp(1) * n * R) / lbd:
                     # TODO - Analyse the impact of rounding up
                     new_r = min(r + 1, n/2)
                     u = 0
@@ -182,14 +183,13 @@ def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters):
                 new_bit_strings.append(new_bit_string)
                 new_fitness_values.append(fitness_function.result(fitness_parameters, n, new_bit_string))
                 iterations += 1
-            # Picking the worst offspring
+            # Picking the best offspring
             # In case of a tie, the first offspring in the array is returned
             # This is equivalent to breaking ties randomly as the order is random
-            # TODO - Check if this should not be argmax ?
-            min_index = np.argmin(new_fitness_values)
-            new_bit_string = new_bit_strings[min_index]
-            new_fitness_value = new_fitness_values[min_index]
-            if min_index <= lbd / 2 - 1:
+            max_index = np.argmax(new_fitness_values)
+            new_bit_string = new_bit_strings[max_index]
+            new_fitness_value = new_fitness_values[max_index]
+            if max_index <= lbd / 2 - 1:
                 # TODO - Analyse the impact of rounding up
                 used_r = r / 2
             else:
@@ -212,8 +212,7 @@ def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters):
                 else:
                     r = 2 * r
             new_r = min(max(2, r), n/4)
-            # TODO - Fix because values can become too large
-            if u > 2 * pow(math.exp(1) * n / r, r) * math.log(n * R) / lbd:
+            if u > np.power(n / r, r) * np.power(n / (n - r), n - r) * math.log(math.exp(1) * n * R) / lbd:
                 new_r = 2
                 g = True
                 u = 0
@@ -328,7 +327,7 @@ def sd_rls_m(parameters, n, fitness_function, fitness_parameters):
 
 
 # TODO - Add comments
-# Algorithm for the (1, lambda) EA
+# Algorithm for the SA-(1, lambda) EA
 def sa_one_lambda(parameters, n, fitness_function, fitness_parameters):
     lbd = parameters[0]
     F = parameters[1]
@@ -519,28 +518,29 @@ OnePlusOne = EvolutionaryAlgorithm("(1+1) EA", [Strength], one_plus_one)
 # R -> it is used to control the probability of failing to find an improvement at the "right" strength
 # R should be of the size of the image of the fitness function,
 # If the image of the fitness function is unknown, R should have a value of at least the problem size
-paramR = Parameter("R", "integer", "size", "size", float('inf'), [])
+paramR = Parameter("R", "integer", "size^3", "size^3", float('inf'), [])
 SDOnePlusOne = EvolutionaryAlgorithm("SD-(1+1) EA", [paramR], sd_one_plus_one)
 
 # Creation of the SASD-(1+lambda) EA
 # Lambda -> Number of offsprings created from the parent
 Lambda = Parameter("Lambda", "integer", 10, 2, float('inf'), [M2])
 Initial_Strength = Parameter("Initial strength", "integer", 1, 1, "size/2", [])
-paramR = Parameter("R", "integer", "size", "size", float('inf'), [])
+paramR = Parameter("R", "integer", "size^3", "size^3", float('inf'), [])
 SASDOnePlusLambda = EvolutionaryAlgorithm("SASD-(1+lambda) EA",
                                           [Lambda, Initial_Strength, paramR],
                                           sasd_one_plus_lambda)
 
 # Creation of the SD-RLS_r
-paramR = Parameter("R", "integer", "size^4",  "size^4", float('inf'), [])
+paramR = Parameter("R", "integer", "size^3",  "size^3", float('inf'), [])
 SDRLSR = EvolutionaryAlgorithm("SD-RLS_r", [paramR], sd_rls_r)
 
 # Creation of the SD-RLS_m
-paramR = Parameter("R", "integer", "size^4", "size^4", float('inf'), [])
+paramR = Parameter("R", "integer", "size^3", "size^3", float('inf'), [])
 SDRLSM = EvolutionaryAlgorithm("SD-RLS_m", [paramR], sd_rls_m)
 
 # Creation of the (1, lambda) EA
-Lambda = Parameter("Lambda", "integer", "log(size)", "log(size)", float('inf'), [])
+# TODO - Paper arguing from lambda = log(n) but reveals to be too long -> so changed to n
+Lambda = Parameter("Lambda", "integer", "size", "log(size)", float('inf'), [])
 paramF = Parameter("F", "integer", 2, 2, float('inf'), [])
 # TODO - Constraint initial strength to [F, n/(2F)]
 Initial_Strength = Parameter("Initial strength", "integer", 2, 2, "size", [])
