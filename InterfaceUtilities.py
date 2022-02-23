@@ -42,7 +42,7 @@ def find_fitness(fitness_name):
 
 
 # Build a graph with the x and y values
-def build_graph(root, x, y, row, column, title, x_label, y_label):
+def build_graph(root, labels, xs, ys, row, column, title, x_label, y_label):
     fig = Figure(figsize=(6, 4), dpi=100)
     a = fig.add_subplot(111)
 
@@ -50,7 +50,11 @@ def build_graph(root, x, y, row, column, title, x_label, y_label):
     a.set_xlabel(x_label)
     a.set_ylabel(y_label)
 
-    a.plot(x, y, '.')
+    for i in range(len(labels)):
+        a.plot(xs[i], ys[i], '.', label=labels[i])
+
+    if len(labels) > 1:
+        a.legend(loc='upper left', frameon=False)
 
     canvas = FigureCanvasTkAgg(fig, root)
     canvas.draw()

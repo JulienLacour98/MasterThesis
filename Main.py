@@ -40,9 +40,9 @@ class MainInterface(tk.Tk):
             # Create the action frame
             frame = class_name(class_name, container, self, action,
                                problem_size, problem_size_end, step, iterations,
+                               fitness_functions[0], default_parameters(fitness_functions[0], problem_size.get()),
                                evolutionary_algorithms[0],
-                               default_parameters(evolutionary_algorithms[0], problem_size.get()),
-                               fitness_functions[0], default_parameters(fitness_functions[0], problem_size.get()))
+                               default_parameters(evolutionary_algorithms[0], problem_size.get()), [], [], [])
             self.frames[class_name] = frame
             frame.grid(row=0, column=0, sticky="nsew")
         self.show_frame(StartPage)

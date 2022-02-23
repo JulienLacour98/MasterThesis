@@ -41,8 +41,8 @@ def update_parameter(value, size):
         return int(math.ceil(math.log(size)))
     elif value == "size/2":
         return int(size/2)
-    elif value == "size/4-1":
-        return int(size/4) - 1
+    elif value == "size/4":
+        return int(size/4)
     else:
         return value
             

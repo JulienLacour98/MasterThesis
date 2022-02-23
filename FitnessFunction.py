@@ -122,11 +122,11 @@ gap_m = Parameter("m", "integer", 4, 2, "size", INT)
 JumpM = FitnessFunction("Jump_m", [gap_m], INT, jump_m, jump_m_maximum)
 
 # Creation of JumpOffset
-gap_m = Parameter("m", "integer", 4, 2, "size/4-1", INT)
+gap_m = Parameter("m", "integer", 4, 2, "size/4", INT)
 JumpOffsetM = FitnessFunction("JumpOffset_m", [gap_m], M4, jump_offset_m, jump_offset_m_maximum)
 
 # Creation of JumpOffsetSpike
-gap_m = Parameter("m", "integer", 4, 2, "size/4-1", M2)
+gap_m = Parameter("m", "integer", 4, 2, "size/4", M2)
 JumpOffsetSpikeM = FitnessFunction("JumpOffsetSpike_m", [gap_m], M4, jump_offset_spike_m, jump_offset_spike_m_maximum)
 
 # Creation of Cliff
