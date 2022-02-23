@@ -4,25 +4,29 @@ import numpy as np
 
 class Parameter:
 
-    def __init__(self, name, parameter_type, default_value, min_value, max_value, constraints):
+    def __init__(self, name, parameter_type, default_value, min_value, max_value, constraint):
         self.name = name
         self.parameter_type = parameter_type
         self.default_value = default_value
         self.min_value = min_value
         self.max_value = max_value
-        self.constraints = constraints
+        self.constraint = constraint
 
     # Checking that the value is of the right type and that it is in between the min and max values
-    def is_value_valid(self, value):
+    def is_value_valid(self, value, size):
         if self.parameter_type == "integer":
-            if value.isnumeric() and self.min_value <= int(value) <= self.max_value:
-                valid = True
-                for constraint in self.constraints:
-                    if not constraint.check_condition(value):
-                        valid = False
-                return valid
+            if not str(value).isnumeric():
+                return "It has to be an integer"
             else:
-                return False
+                min_value = update_parameter(self.min_value, size)
+                max_value = update_parameter(self.max_value, size)
+                if min_value <= value <= max_value:
+                    if self.constraint.check_condition(value):
+                        return "correct"
+                    else:
+                        return self.constraint.description
+                else:
+                    return "The integer has to be between " + str(min_value) + " and " + str(max_value)
         else:
             raise Exception("Unknown parameter's type")
 
@@ -34,11 +38,11 @@ def update_parameter(value, size):
     elif value == "size^3":
         return np.power(size, 3)
     elif value == "log(size)":
-        return math.ceil(math.log(size))
+        return int(math.ceil(math.log(size)))
     elif value == "size/2":
-        return size/2
+        return int(size/2)
     elif value == "size/4-1":
-        return size/4 - 1
+        return int(size/4) - 1
     else:
         return value
             

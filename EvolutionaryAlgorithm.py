@@ -220,7 +220,6 @@ def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters):
     return bit_string, iterations, x, y
 
 
-# TODO - Add comments
 # Algorithm for the SD-RLS_r algorithm
 def sd_rls_r(parameters, n, fitness_function, fitness_parameters):
     R = parameters[0]
@@ -272,7 +271,6 @@ def sd_rls_r(parameters, n, fitness_function, fitness_parameters):
     return bit_string, iterations, x, y
 
 
-# TODO - Add comments
 # Algorithm for the SD-RLS_m algorithm
 def sd_rls_m(parameters, n, fitness_function, fitness_parameters):
     R = parameters[0]
@@ -292,6 +290,7 @@ def sd_rls_m(parameters, n, fitness_function, fitness_parameters):
         new_fitness_value = fitness_function.result(fitness_parameters, n, new_bit_string)
         iterations += 1
         u += 1
+        # Better bit string found
         if new_fitness_value > fitness_value:
             bit_string = new_bit_string
             fitness_value = new_fitness_value
@@ -311,6 +310,7 @@ def sd_rls_m(parameters, n, fitness_function, fitness_parameters):
             found_maximum = (fitness_value == fitness_maximum)
             x.append(iterations)
             y.append(fitness_value)
+        # If too many iterations with a strength
         if u > min(B, math.comb(n, s) * math.log(R)):
             if s == r:
                 if r < n/2:
@@ -326,7 +326,6 @@ def sd_rls_m(parameters, n, fitness_function, fitness_parameters):
     return bit_string, iterations, x, y
 
 
-# TODO - Add comments
 # Algorithm for the SA-(1, lambda) EA
 def sa_one_lambda(parameters, n, fitness_function, fitness_parameters):
     lbd = parameters[0]
@@ -341,6 +340,7 @@ def sa_one_lambda(parameters, n, fitness_function, fitness_parameters):
     found_maximum = (fitness_value == fitness_maximum)
     r = r_init
     while not found_maximum:
+        # Create offsprings with strength r/F or r*F
         rs = []
         new_bit_strings = []
         new_fitness_values = []
@@ -355,33 +355,34 @@ def sa_one_lambda(parameters, n, fitness_function, fitness_parameters):
         index_max = 0
         # Finding the bit_string with the maximum fitness value favoring a mutation rate of r/F in case of tie
         # This is a random choice afterwards because the order is random
-        # TODO - Check again that it is correct
         for j in range(1, lbd):
             if (new_fitness_values[j] > new_fitness_values[index_max]) or \
                     (new_fitness_values[j] == new_fitness_values[index_max] and rs[j] == r/F):
                 index_max = j
+        # The best bit string is kept and will be used to create the future offsprings
         bit_string = new_bit_strings[index_max]
         fitness_value = new_fitness_values[index_max]
         found_maximum = (fitness_value == fitness_maximum)
         new_r = rs[index_max]
         x.append(iterations)
         y.append(fitness_value)
-        # TODO - Should this be modified because working with maximizing instead of minimizing ? I think not
+        # Bound the value of r
         r = min(max(F, new_r), n/(2 * F))
     return bit_string, iterations, x, y
 
 
-# TODO - Add comments
 # Algorithm for the (mu+1) EA with deterministic crowding
 def mu_plus_one_deterministic(parameters, n, fitness_function, fitness_parameters):
     mu = parameters[0]
     population = []
     fitness_values = []
     iterations = 0
+    # Creation of mu random bit strings
     for i in range(mu):
         population.append(BitString(n))
         fitness_values.append(fitness_function.result(fitness_parameters, n, population[i]))
         iterations += 1
+    # Storing the best bit string in order to know when the algorithm stops
     index_max = np.argmax(fitness_values)
     bit_string = population[index_max]
     fitness_value = fitness_values[index_max]
@@ -390,13 +391,16 @@ def mu_plus_one_deterministic(parameters, n, fitness_function, fitness_parameter
     fitness_maximum = fitness_function.maximum(fitness_parameters, n)
     found_maximum = (fitness_value == fitness_maximum)
     while not found_maximum:
+        # Picking one of the bit strings randomly and create an offspring from it
         index = random.randrange(mu)
         new_bit_string = population[index].create_offspring_p(1 / n)
         new_fitness_value = fitness_function.result(fitness_parameters, n, new_bit_string)
         iterations += 1
+        # If the offspring is better than the parent, the parent is replaced
         if new_fitness_value >= fitness_values[index]:
             population[index] = new_bit_string
             fitness_values[index] = new_fitness_value
+            # If we found a new maximum, the maximum value of fitness is replaced
             if new_fitness_value >= fitness_value:
                 bit_string = new_bit_string
                 fitness_value = new_fitness_value
@@ -406,7 +410,8 @@ def mu_plus_one_deterministic(parameters, n, fitness_function, fitness_parameter
     return bit_string, iterations, x, y
 
 
-# TODO - Check
+# Algorithm for the (mu + 1) EA
+# The parameter "operator" is used to pick a parent selection operator ("Uniform" or "Inverse-K")
 def mu_plus_one(operator, parameters, n, fitness_function, fitness_parameters):
     mu = parameters[0]
     if operator == "Inverse-K":
@@ -414,10 +419,12 @@ def mu_plus_one(operator, parameters, n, fitness_function, fitness_parameters):
     population = []
     fitness_values = []
     iterations = 0
+    # Creating mu bit strings randomly
     for i in range(mu):
         population.append(BitString(n))
         fitness_values.append(fitness_function.result(fitness_parameters, n, population[i]))
         iterations += 1
+    # Storing the best bit string in order to know when the algorithm stops
     fitness_maximum = fitness_function.maximum(fitness_parameters, n)
     index_max = np.argmax(fitness_values)
     bit_string = population[index_max]
@@ -426,9 +433,12 @@ def mu_plus_one(operator, parameters, n, fitness_function, fitness_parameters):
     y = [fitness_value]
     found_maximum = (fitness_value == fitness_maximum)
     while not found_maximum:
+        # Pick an element depending on the parent selection operator
         if operator == "Uniform":
+            # Pick a random element
             index = random.randrange(mu)
         elif operator == "Inverse-K":
+            # Pick K random element and select the worst one
             indexes = random.sample(list(range(0, mu)), K)
             index = indexes[0]
             fitness_min = fitness_values[index]
@@ -443,6 +453,7 @@ def mu_plus_one(operator, parameters, n, fitness_function, fitness_parameters):
         iterations += 1
         min_indexes = [0]
         fitness_min = fitness_values[0]
+        # Get the worst bit string of the mu bit strings
         for i in range(1, mu):
             if fitness_values[i] == fitness_min:
                 min_indexes.append(i)
@@ -450,6 +461,7 @@ def mu_plus_one(operator, parameters, n, fitness_function, fitness_parameters):
                 min_indexes = [i]
                 fitness_min = fitness_values[i]
         new_index = random.choice(min_indexes)
+        # If the new bit string is an improvement, replace the worst one by it
         if new_fitness_value >= fitness_values[new_index]:
             population[new_index] = new_bit_string
             fitness_values[new_index] = new_fitness_value
@@ -462,9 +474,10 @@ def mu_plus_one(operator, parameters, n, fitness_function, fitness_parameters):
     return bit_string, iterations, x, y
 
 
-# TODO - Check
+# Algorithm for the compact Genetic Algorithm
 def compact_genetic_algorithm(parameters, n, fitness_function, fitness_parameters):
     K = parameters[0]
+    # Initialise the probabilities of each bit to 1/2
     ps = np.full(n, 1/2)
     fitness_maximum = fitness_function.maximum(fitness_parameters, n)
     found_maximum = False
@@ -472,6 +485,7 @@ def compact_genetic_algorithm(parameters, n, fitness_function, fitness_parameter
     xs = []
     ys = []
     while not found_maximum:
+        # Generate 2 bit strings randomly using the probabilities
         x = BitString(n)
         y = BitString(n)
         x_string = ""
@@ -490,12 +504,14 @@ def compact_genetic_algorithm(parameters, n, fitness_function, fitness_parameter
         x_fitness = fitness_function.result(fitness_parameters, n, x)
         y_fitness = fitness_function.result(fitness_parameters, n, y)
         iterations += 2
+        # Switch strings in order to have x as the best one
         if x_fitness < y_fitness:
             x, y = y, x
             x_fitness, y_fitness = y_fitness, x_fitness
         xs.append(iterations)
         ys.append(x_fitness)
         found_maximum = (x_fitness == fitness_maximum)
+        # Weight probabilities depending on the results
         for i in range(n):
             if x.string[i] > y.string[i]:
                 ps[i] += 1/K
@@ -511,58 +527,58 @@ evolutionary_algorithm_names = []
 
 # Creation of the (1+1) EA
 # Strength -> Every bit if flipped with a probability of strength/size
-Strength = Parameter("Strength", "integer", 1, 1, "size/2", [])
+Strength = Parameter("Strength", "integer", 1, 1, "size/2", INT)
 OnePlusOne = EvolutionaryAlgorithm("(1+1) EA", [Strength], one_plus_one)
 
 # Creation of the SD-(1+1) EA
 # R -> it is used to control the probability of failing to find an improvement at the "right" strength
 # R should be of the size of the image of the fitness function,
 # If the image of the fitness function is unknown, R should have a value of at least the problem size
-paramR = Parameter("R", "integer", "size^3", "size^3", float('inf'), [])
+paramR = Parameter("R", "integer", "size^3", "size^3", float('inf'), INT)
 SDOnePlusOne = EvolutionaryAlgorithm("SD-(1+1) EA", [paramR], sd_one_plus_one)
 
 # Creation of the SASD-(1+lambda) EA
 # Lambda -> Number of offsprings created from the parent
-Lambda = Parameter("Lambda", "integer", 10, 2, float('inf'), [M2])
-Initial_Strength = Parameter("Initial strength", "integer", 1, 1, "size/2", [])
-paramR = Parameter("R", "integer", "size^3", "size^3", float('inf'), [])
+Lambda = Parameter("Lambda", "integer", 10, 2, float('inf'), M2)
+Initial_Strength = Parameter("Initial strength", "integer", 1, 1, "size/2", INT)
+paramR = Parameter("R", "integer", "size^3", "size^3", float('inf'), INT)
 SASDOnePlusLambda = EvolutionaryAlgorithm("SASD-(1+lambda) EA",
                                           [Lambda, Initial_Strength, paramR],
                                           sasd_one_plus_lambda)
 
 # Creation of the SD-RLS_r
-paramR = Parameter("R", "integer", "size^3",  "size^3", float('inf'), [])
+paramR = Parameter("R", "integer", "size^3",  "size^3", float('inf'), INT)
 SDRLSR = EvolutionaryAlgorithm("SD-RLS_r", [paramR], sd_rls_r)
 
 # Creation of the SD-RLS_m
-paramR = Parameter("R", "integer", "size^3", "size^3", float('inf'), [])
+paramR = Parameter("R", "integer", "size^3", "size^3", float('inf'), INT)
 SDRLSM = EvolutionaryAlgorithm("SD-RLS_m", [paramR], sd_rls_m)
 
 # Creation of the (1, lambda) EA
 # TODO - Paper arguing from lambda = log(n) but reveals to be too long -> so changed to n
-Lambda = Parameter("Lambda", "integer", "size", "log(size)", float('inf'), [])
-paramF = Parameter("F", "integer", 2, 2, float('inf'), [])
+Lambda = Parameter("Lambda", "integer", "size", "log(size)", float('inf'), INT)
+paramF = Parameter("F", "integer", 2, 2, float('inf'), INT)
 # TODO - Constraint initial strength to [F, n/(2F)]
-Initial_Strength = Parameter("Initial strength", "integer", 2, 2, "size", [])
+Initial_Strength = Parameter("Initial strength", "integer", 2, 2, "size", INT)
 SAOneLambda = EvolutionaryAlgorithm("SA-(1, lambda) EA", [Lambda, paramF, Initial_Strength], sa_one_lambda)
 
 # Creation of the (mu + 1) EA with deterministic crowding
-Mu = Parameter("mu", "integer", 10, 1, float('inf'), [])
+Mu = Parameter("mu", "integer", 10, 1, float('inf'), INT)
 MuPlusOneDeterministic = EvolutionaryAlgorithm("(mu+1) EA deterministic", [Mu], mu_plus_one_deterministic)
 
 # Creation of the (mu + 1) EA with uniform selection
-Mu = Parameter("mu", "integer", 10, 1, float('inf'), [])
+Mu = Parameter("mu", "integer", 10, 1, float('inf'), INT)
 MuPlusOneUniform = EvolutionaryAlgorithm("(mu+1) EA uniform", [Mu], functools.partial(mu_plus_one, "Uniform"))
 
 # Creation of the (mu + 1) EA with Inverse K-tournament selection
-Mu = Parameter("mu", "integer", 10, 1, float('inf'), [])
-K = Parameter("K", "integer", 10, 1, float('inf'), [])
+Mu = Parameter("mu", "integer", 10, 1, float('inf'), INT)
+K = Parameter("K", "integer", 10, 1, float('inf'), INT)
 MuPlusOneInverseK = EvolutionaryAlgorithm("(mu+1) EA inverse K-tournament",
                                           [Mu, K],
                                           functools.partial(mu_plus_one, "Inverse-K"))
 
 # Creation of the compact Genetic Algorithm
-K = Parameter("K", "integer", 10, 1, float('inf'), [])
+K = Parameter("K", "integer", 10, 1, float('inf'), INT)
 cGA = EvolutionaryAlgorithm("cGA", [K], compact_genetic_algorithm)
 
 

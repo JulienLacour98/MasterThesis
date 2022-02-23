@@ -1,4 +1,5 @@
 # TODO - Clean how the classes are created -> try to remove useless attributes from main classes
+
 from Action import *
 from InterfaceUtilities import *
 
@@ -118,6 +119,43 @@ class ActionInterface(Interface):
         tk.Entry(self, justify=CENTER, textvariable=self.iterations).grid(row=start_row, column=1, padx=5, pady=5)
         return start_row + 1
 
+    def check_size(self, size_row, size_column):
+        valid = True
+        size_constraint = self.fitness_function.size_constraint
+        for label in self.grid_slaves(size_row, size_column):
+            label.grid_forget()
+        if not size_constraint.check_condition(self.problem_size.get()):
+            tk.Label(self, text=size_constraint.description).grid(row=size_row, column=size_column, padx=5, pady=5)
+            valid = False
+        return valid
+
+    def check_evolutionary_parameters(self, evolutionary_row, evolutionary_column):
+        valid = True
+        evolutionary_parameters = self.evolutionary_algorithm.parameters
+        for i in range(len(evolutionary_parameters)):
+            for label in self.grid_slaves(evolutionary_row + i, evolutionary_column):
+                label.grid_forget()
+            correctness = evolutionary_parameters[i].is_value_valid(self.evolutionary_parameter_values[i].get(),
+                                                                    self.problem_size.get())
+            if correctness != "correct":
+                tk.Label(self, text=correctness)\
+                    .grid(row=evolutionary_row + i, column=evolutionary_column, padx=5, pady=5)
+                valid = False
+        return valid
+
+    def check_fitness_parameters(self, fitness_row, fitness_column):
+        valid = True
+        fitness_parameters = self.fitness_function.parameters
+        for i in range(len(fitness_parameters)):
+            for label in self.grid_slaves(fitness_row + i, fitness_column):
+                label.grid_forget()
+            correctness = fitness_parameters[i].is_value_valid(self.fitness_parameter_values[i].get(),
+                                                               self.problem_size.get())
+            if correctness != "correct":
+                tk.Label(self, text=correctness).grid(row=fitness_row + i, column=fitness_column, padx=5, pady=5)
+                valid = False
+        return valid
+
 
 # Class for the main page interface
 class StartPage(Interface):
@@ -150,29 +188,31 @@ class DF(ActionInterface):
 
         frame_creation(self, action.description, StartPage)
         row = self.choice_of_problem_size(2)
-        row = self.choice_of_fitness_function(row)
-        row = self.choice_of_fitness_parameters(row)
+        fitness_row = self.choice_of_fitness_function(row)
+        row = self.choice_of_fitness_parameters(fitness_row)
 
         # Create the graph of the fitness function
-        display_button = ttk.Button(self, text="Display graph", command=lambda: self.display_fitness_graph(row+1, 2))
+        display_button = ttk.Button(self, text="Display graph",
+                                    command=lambda: self.display_fitness_graph(row+1, 2, 2, fitness_row, 3))
         display_button.grid(row=row, column=2, padx=5, pady=5)
 
-    def display_fitness_graph(self, start_row, problem_size_row):
-        # TODO - Check Constraints on every parameter and problem sizes
+    def display_fitness_graph(self, start_row, size_row, size_column, fitness_row, fitness_column):
         problem_size = self.problem_size.get()
-        fitness_parameter_values = []
-        for fitness_parameter_value in self.fitness_parameter_values:
-            fitness_parameter_values.append(fitness_parameter_value.get())
-        bit_string = only_zeros(problem_size)
-        x = np.empty(problem_size + 1)
-        y = np.empty(problem_size + 1)
-        x[0] = 0
-        y[0] = self.fitness_function.result(fitness_parameter_values, problem_size, bit_string)
-        for i in range(problem_size):
-            bit_string.add_one_one()
-            x[i + 1] = i + 1
-            y[i + 1] = self.fitness_function.result(fitness_parameter_values, problem_size, bit_string)
-        build_graph(self, x, y, start_row, 2, self.fitness_function.name + " in function of the norm", '|x|', 'f(x)')
+        if self.check_size(size_row, size_column) and self.check_fitness_parameters(fitness_row, fitness_column):
+            fitness_parameter_values = []
+            for fitness_parameter_value in self.fitness_parameter_values:
+                fitness_parameter_values.append(fitness_parameter_value.get())
+            bit_string = only_zeros(problem_size)
+            x = np.empty(problem_size + 1)
+            y = np.empty(problem_size + 1)
+            x[0] = 0
+            y[0] = self.fitness_function.result(fitness_parameter_values, problem_size, bit_string)
+            for i in range(problem_size):
+                bit_string.add_one_one()
+                x[i + 1] = i + 1
+                y[i + 1] = self.fitness_function.result(fitness_parameter_values, problem_size, bit_string)
+            build_graph(self, x, y, start_row, 2, self.fitness_function.name +
+                        " in function of the norm", '|x|', 'f(x)')
 
 
 class R1(ActionInterface):
@@ -189,33 +229,39 @@ class R1(ActionInterface):
 
         frame_creation(self, action.description, StartPage)
         row = self.choice_of_problem_size(2)
-        row = self.choice_of_evolutionary_algorithm(row)
-        row = self.choice_of_evolutionary_parameters(row)
-        row = self.choice_of_fitness_function(row)
-        row = self.choice_of_fitness_parameters(row)
+        evolutionary_row = self.choice_of_evolutionary_algorithm(row)
+        row = self.choice_of_evolutionary_parameters(evolutionary_row)
+        fitness_row = self.choice_of_fitness_function(row)
+        row = self.choice_of_fitness_parameters(fitness_row)
 
         # Solve the problem and display results
-        display_button = ttk.Button(self, text="Run", command=lambda: self.solve(row+1, 2))
+        display_button = ttk.Button(self, text="Run", command=lambda: self.solve(row+1, 2, 2,
+                                                                                 evolutionary_row, 3, fitness_row, 3))
         display_button.grid(row=row, column=2, padx=5, pady=5)
 
-    def solve(self, start_row, problem_size_row):
-        problem_size = self.problem_size.get()
-        evolutionary_parameter_values = []
-        for evolutionary_parameter_value in self.evolutionary_parameter_values:
-            evolutionary_parameter_values.append(evolutionary_parameter_value.get())
-        fitness_parameter_values = []
-        for fitness_parameter_value in self.fitness_parameter_values:
-            fitness_parameter_values.append(fitness_parameter_value.get())
-        bit_string, iterations, timer, x, y = self.evolutionary_algorithm.solve(evolutionary_parameter_values,
-                                                                                problem_size,
-                                                                                self.fitness_function,
-                                                                                fitness_parameter_values)
-        tk.Label(self, text="The solution was found in " + str(round(timer, 2)) + " seconds")\
-            .grid(row=start_row, column=1, padx=5, pady=5)
-        tk.Label(self, text="The solution was found in " + str(iterations) + " iterations")\
-            .grid(row=start_row+1, column=1, padx=5, pady=5)
+    def solve(self, start_row, size_row, size_column,
+              evolutionary_row, evolutionary_column,
+              fitness_row, fitness_column):
+        if self.check_size(size_row, size_column) and \
+                self.check_evolutionary_parameters(evolutionary_row, evolutionary_column) and \
+                self.check_fitness_parameters(fitness_row, fitness_column):
+            problem_size = self.problem_size.get()
+            evolutionary_parameter_values = []
+            for evolutionary_parameter_value in self.evolutionary_parameter_values:
+                evolutionary_parameter_values.append(evolutionary_parameter_value.get())
+            fitness_parameter_values = []
+            for fitness_parameter_value in self.fitness_parameter_values:
+                fitness_parameter_values.append(fitness_parameter_value.get())
+            bit_string, iterations, timer, x, y = self.evolutionary_algorithm.solve(evolutionary_parameter_values,
+                                                                                    problem_size,
+                                                                                    self.fitness_function,
+                                                                                    fitness_parameter_values)
+            tk.Label(self, text="The solution was found in " + str(round(timer, 2)) + " seconds")\
+                .grid(row=start_row, column=1, padx=5, pady=5)
+            tk.Label(self, text="The solution was found in " + str(iterations) + " iterations")\
+                .grid(row=start_row+1, column=1, padx=5, pady=5)
 
-        build_graph(self, x, y, start_row+2, 1, "Updates of the bit string", 'iterations', 'f(x)')
+            build_graph(self, x, y, start_row+2, 1, "Updates of the bit string", 'iterations', 'f(x)')
 
 
 class RN(ActionInterface):
@@ -234,39 +280,45 @@ class RN(ActionInterface):
 
         row = self.choice_of_problem_size(2)
         row = self.choice_of_number_of_iterations(row)
-        row = self.choice_of_evolutionary_algorithm(row)
-        row = self.choice_of_evolutionary_parameters(row)
-        row = self.choice_of_fitness_function(row)
-        row = self.choice_of_fitness_parameters(row)
+        evolutionary_row = self.choice_of_evolutionary_algorithm(row)
+        row = self.choice_of_evolutionary_parameters(evolutionary_row)
+        fitness_row = self.choice_of_fitness_function(row)
+        row = self.choice_of_fitness_parameters(fitness_row)
 
         # Create the graph of the fitness function
-        display_button = ttk.Button(self, text="Run", command=lambda: self.solve_n_times(row + 1, 2))
+        display_button = ttk.Button(self, text="Run", command=lambda: self.solve_n_times(row+1, 2, 2,
+                                                                                         evolutionary_row, 3,
+                                                                                         fitness_row, 3))
         display_button.grid(row=row, column=2, padx=5, pady=5)
 
-    def solve_n_times(self, start_row, problem_size_row):
-        problem_size = self.problem_size.get()
-        iterations = self.iterations.get()
-        evolutionary_parameter_values = []
-        for evolutionary_parameter_value in self.evolutionary_parameter_values:
-            evolutionary_parameter_values.append(evolutionary_parameter_value.get())
-        fitness_parameter_values = []
-        for fitness_parameter_value in self.fitness_parameter_values:
-            fitness_parameter_values.append(fitness_parameter_value.get())
-        results = np.empty(iterations)
-        for i in range(iterations):
-            _, results[i], _, _, _ = self.evolutionary_algorithm.solve(evolutionary_parameter_values,
-                                                                       problem_size,
-                                                                       self.fitness_function,
-                                                                       fitness_parameter_values)
+    def solve_n_times(self, start_row, size_row, size_column,
+                      evolutionary_row, evolutionary_column, fitness_row, fitness_column):
+        if self.check_size(size_row, size_column) and \
+                self.check_evolutionary_parameters(evolutionary_row, evolutionary_column) and \
+                self.check_fitness_parameters(fitness_row, fitness_column):
+            problem_size = self.problem_size.get()
+            iterations = self.iterations.get()
+            evolutionary_parameter_values = []
+            for evolutionary_parameter_value in self.evolutionary_parameter_values:
+                evolutionary_parameter_values.append(evolutionary_parameter_value.get())
+            fitness_parameter_values = []
+            for fitness_parameter_value in self.fitness_parameter_values:
+                fitness_parameter_values.append(fitness_parameter_value.get())
+            results = np.empty(iterations)
+            for i in range(iterations):
+                _, results[i], _, _, _ = self.evolutionary_algorithm.solve(evolutionary_parameter_values,
+                                                                           problem_size,
+                                                                           self.fitness_function,
+                                                                           fitness_parameter_values)
 
-        tk.Label(self, text="The minimum number of iterations is: " + str(int(results.min()))) \
-            .grid(row=start_row , column=1, padx=5, pady=5)
-        tk.Label(self, text="The maximum number of iterations is: " + str(int(results.max()))) \
-            .grid(row=start_row + 1, column=1, padx=5, pady=5)
-        tk.Label(self, text="The mean of the number of iterations is: " + str(round(results.mean(), 2))) \
-            .grid(row=start_row + 2, column=1, padx=5, pady=5)
-        tk.Label(self, text="The median of the number of iterations is: " + str(int(np.median(results)))) \
-            .grid(row=start_row + 3, column=1, padx=5, pady=5)
+            tk.Label(self, text="The minimum number of iterations is: " + str(int(results.min()))) \
+                .grid(row=start_row , column=1, padx=5, pady=5)
+            tk.Label(self, text="The maximum number of iterations is: " + str(int(results.max()))) \
+                .grid(row=start_row + 1, column=1, padx=5, pady=5)
+            tk.Label(self, text="The mean of the number of iterations is: " + str(round(results.mean(), 2))) \
+                .grid(row=start_row + 2, column=1, padx=5, pady=5)
+            tk.Label(self, text="The median of the number of iterations is: " + str(int(np.median(results)))) \
+                .grid(row=start_row + 3, column=1, padx=5, pady=5)
 
 
 class RNM(ActionInterface):
@@ -285,16 +337,17 @@ class RNM(ActionInterface):
 
         row = self.choice_of_problem_range(2)
         row = self.choice_of_number_of_iterations(row)
-        row = self.choice_of_evolutionary_algorithm(row)
-        row = self.choice_of_evolutionary_parameters(row)
-        row = self.choice_of_fitness_function(row)
-        row = self.choice_of_fitness_parameters(row)
+        evolutionary_row = self.choice_of_evolutionary_algorithm(row)
+        row = self.choice_of_evolutionary_parameters(evolutionary_row)
+        fitness_row = self.choice_of_fitness_function(row)
+        row = self.choice_of_fitness_parameters(fitness_row)
 
         # Create the graph of the fitness function
-        display_button = ttk.Button(self, text="Run", command=lambda: self.solve_n_m_times(row + 1, 2))
+        display_button = ttk.Button(self, text="Run", command=lambda: self.solve_n_m_times(row+1))
         display_button.grid(row=row, column=2, padx=5, pady=5)
 
-    def solve_n_m_times(self, start_row, problem_size_row):
+# TODO - Add the constraints
+    def solve_n_m_times(self, start_row):
         problem_size = self.problem_size.get()
         problem_size_end = self.problem_size_end.get()
         step = self.step.get()
