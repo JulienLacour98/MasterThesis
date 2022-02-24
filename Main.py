@@ -37,12 +37,18 @@ class MainInterface(tk.Tk):
             step.set(10)
             iterations = IntVar()
             iterations.set(100)
+            fitness_function_name = StringVar()
+            fitness_function_name.set(fitness_function_names[0])
+            evolutionary_algorithm_name = StringVar()
+            evolutionary_algorithm_name.set(evolutionary_algorithm_names[0])
             # Create the action frame
             frame = class_name(class_name, container, self, action,
                                problem_size, problem_size_end, step, iterations,
-                               fitness_functions[0], default_parameters(fitness_functions[0], problem_size.get()),
-                               evolutionary_algorithms[0],
-                               default_parameters(evolutionary_algorithms[0], problem_size.get()), [], [], [])
+                               fitness_function_name,
+                               default_parameters(find_fitness(fitness_function_name.get()), problem_size.get()),
+                               evolutionary_algorithm_name,
+                               default_parameters(find_evolutionary(evolutionary_algorithm_name.get()), problem_size.get()),
+                               [], [], [])
             self.frames[class_name] = frame
             frame.grid(row=0, column=0, sticky="nsew")
         self.show_frame(StartPage)

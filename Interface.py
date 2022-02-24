@@ -18,21 +18,19 @@ class ActionInterface(Interface):
 
     def __init__(self, class_name, parent, controller, action,
                  problem_size, problem_size_end, step, iterations,
-                 fitness_function, fitness_parameter_values,
-                 evolutionary_algorithm, evolutionary_parameter_values,
+                 fitness_function_name, fitness_parameter_values,
+                 evolutionary_algorithm_name, evolutionary_parameter_values,
                  labels, xs, ys):
 
         super().__init__(class_name, parent, controller)
         self.action = action
-        self.fitness_function_name = StringVar()
-        self.fitness_function_name.set(fitness_function.name)
-        self.fitness_function = fitness_function
-        self.fitness_parameters = fitness_function.parameters
+        self.fitness_function_name = fitness_function_name
+        self.fitness_function = find_fitness(fitness_function_name.get())
+        self.fitness_parameters = self.fitness_function.parameters
         self.fitness_parameter_values = fitness_parameter_values
-        self.evolutionary_algorithm_name = StringVar()
-        self.evolutionary_algorithm_name.set(evolutionary_algorithm.name)
-        self.evolutionary_algorithm = evolutionary_algorithm
-        self.evolutionary_parameters = evolutionary_algorithm.parameters
+        self.evolutionary_algorithm_name = evolutionary_algorithm_name
+        self.evolutionary_algorithm = find_evolutionary(evolutionary_algorithm_name.get())
+        self.evolutionary_parameters = self.evolutionary_algorithm.parameters
         self.evolutionary_parameter_values = evolutionary_parameter_values
         self.problem_size = problem_size
         self.problem_size_end = problem_size_end
@@ -67,8 +65,10 @@ class ActionInterface(Interface):
         fitness_function = find_fitness(self.fitness_function_name.get())
         new_frame = self.class_name(self.class_name, self.parent, self.controller, self.action,
                                     self.problem_size, self.problem_size_end, self.step, self.iterations,
-                                    fitness_function, default_parameters(fitness_function, self.problem_size.get()),
-                                    self.evolutionary_algorithm, self.evolutionary_parameter_values,
+                                    self.fitness_function_name,
+                                    default_parameters(fitness_function, self.problem_size.get()),
+                                    self.evolutionary_algorithm_name,
+                                    self.evolutionary_parameter_values,
                                     [], [], [])
         new_frame.grid(row=0, column=0, sticky="nsew")
         new_frame.tkraise()
@@ -98,8 +98,8 @@ class ActionInterface(Interface):
         evolutionary_algorithm = find_evolutionary(self.evolutionary_algorithm_name.get())
         new_frame = self.class_name(self.class_name, self.parent, self.controller, self.action,
                                     self.problem_size, self.problem_size_end, self.step, self.iterations,
-                                    self.fitness_function, self.fitness_parameter_values,
-                                    evolutionary_algorithm,
+                                    self.fitness_function_name, self.fitness_parameter_values,
+                                    self.evolutionary_algorithm_name,
                                     default_parameters(evolutionary_algorithm, self.problem_size.get()),
                                     self.labels, self.xs, self.ys)
         new_frame.grid(row=0, column=0, sticky="nsew")
@@ -212,12 +212,13 @@ class DF(ActionInterface):
             bit_string = only_zeros(problem_size)
             x = np.empty(problem_size + 1)
             y = np.empty(problem_size + 1)
+
             x[0] = 0
-            y[0] = self.fitness_function.result(fitness_parameter_values, problem_size, bit_string)
+            y[0] = self.fitness_function.result(fitness_parameter_values, bit_string)
             for i in range(problem_size):
                 bit_string.add_one_one()
                 x[i + 1] = i + 1
-                y[i + 1] = self.fitness_function.result(fitness_parameter_values, problem_size, bit_string)
+                y[i + 1] = self.fitness_function.result(fitness_parameter_values, bit_string)
             build_graph(self, [self.fitness_function_name.get()], [x], [y], start_row, 2, self.fitness_function.name +
                         " as a function of the norm", '|x|', 'f(x)')
 

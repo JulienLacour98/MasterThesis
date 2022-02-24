@@ -37,7 +37,7 @@ def one_plus_one(parameters, n, fitness_function, fitness_parameters):
     # Creation of a random bit string of length n
     bit_string = BitString(n)
     # Compute the value of the fitness function for the previously created bit string
-    fitness_value = fitness_function.result(fitness_parameters, n, bit_string)
+    fitness_value = fitness_function.result(fitness_parameters, bit_string)
     iterations = 1
     x = [1]
     y = [fitness_value]
@@ -48,7 +48,7 @@ def one_plus_one(parameters, n, fitness_function, fitness_parameters):
     while not found_maximum:
         # Creation of the offspring
         new_bit_string = bit_string.create_offspring_p(r/n)
-        new_fitness_value = fitness_function.result(fitness_parameters, n, new_bit_string)
+        new_fitness_value = fitness_function.result(fitness_parameters, new_bit_string)
         iterations += 1
         # If the fitness value of the new bit string is better than before, it is kept
         if new_fitness_value >= fitness_value:
@@ -66,7 +66,7 @@ def sd_one_plus_one(parameters, n, fitness_function, fitness_parameters):
     # Creation of a random bit string of length "size"
     bit_string = BitString(n)
     # Compute the value of the fitness function for the previously created bit string
-    fitness_value = fitness_function.result(fitness_parameters, n, bit_string)
+    fitness_value = fitness_function.result(fitness_parameters, bit_string)
     iterations = 1
     x = [1]
     y = [fitness_value]
@@ -81,7 +81,7 @@ def sd_one_plus_one(parameters, n, fitness_function, fitness_parameters):
     while not found_maximum:
         # Creation of the offspring
         new_bit_string = bit_string.create_offspring_p(r/n)
-        new_fitness_value = fitness_function.result(fitness_parameters, n, new_bit_string)
+        new_fitness_value = fitness_function.result(fitness_parameters, new_bit_string)
         iterations += 1
         u += 1
         # If the fitness value of the new bit string is better than before, it is kept
@@ -120,7 +120,7 @@ def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters):
     # Creation of a random bit string of length "size"
     bit_string = BitString(n)
     # Compute the value of the fitness function for the previously created bit string
-    fitness_value = fitness_function.result(fitness_parameters, n, bit_string)
+    fitness_value = fitness_function.result(fitness_parameters, bit_string)
     iterations = 1
     x = [1]
     y = [fitness_value]
@@ -143,7 +143,7 @@ def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters):
             for i in range(lbd):
                 new_bit_string = bit_string.create_offspring_p(r/n)
                 new_bit_strings.append(new_bit_string)
-                new_fitness_values.append(fitness_function.result(fitness_parameters, n, new_bit_string))
+                new_fitness_values.append(fitness_function.result(fitness_parameters, new_bit_string))
                 iterations += 1
             # Picking the best offspring
             # In case of a tie, the first offspring in the array is returned
@@ -181,7 +181,7 @@ def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters):
                     p = 2 * r / n
                 new_bit_string = bit_string.create_offspring_p(p)
                 new_bit_strings.append(new_bit_string)
-                new_fitness_values.append(fitness_function.result(fitness_parameters, n, new_bit_string))
+                new_fitness_values.append(fitness_function.result(fitness_parameters, new_bit_string))
                 iterations += 1
             # Picking the best offspring
             # In case of a tie, the first offspring in the array is returned
@@ -225,7 +225,7 @@ def sd_rls_r(parameters, n, fitness_function, fitness_parameters):
     R = parameters[0]
     # Creation of a random bit-string of size n
     bit_string = BitString(n)
-    fitness_value = fitness_function.result(fitness_parameters, n, bit_string)
+    fitness_value = fitness_function.result(fitness_parameters, bit_string)
     iterations = 1
     x = [1]
     y = [fitness_value]
@@ -236,7 +236,7 @@ def sd_rls_r(parameters, n, fitness_function, fitness_parameters):
     u = 0
     while not found_maximum:
         new_bit_string = bit_string.create_offspring_s(s)
-        new_fitness_value = fitness_function.result(fitness_parameters, n, new_bit_string)
+        new_fitness_value = fitness_function.result(fitness_parameters, new_bit_string)
         iterations += 1
         u += 1
         # Better bit-string found
@@ -275,7 +275,7 @@ def sd_rls_r(parameters, n, fitness_function, fitness_parameters):
 def sd_rls_m(parameters, n, fitness_function, fitness_parameters):
     R = parameters[0]
     bit_string = BitString(n)
-    fitness_value = fitness_function.result(fitness_parameters, n, bit_string)
+    fitness_value = fitness_function.result(fitness_parameters, bit_string)
     iterations = 1
     x = [1]
     y = [fitness_value]
@@ -287,7 +287,7 @@ def sd_rls_m(parameters, n, fitness_function, fitness_parameters):
     B = float('inf')
     while not found_maximum:
         new_bit_string = bit_string.create_offspring_s(s)
-        new_fitness_value = fitness_function.result(fitness_parameters, n, new_bit_string)
+        new_fitness_value = fitness_function.result(fitness_parameters, new_bit_string)
         iterations += 1
         u += 1
         # Better bit string found
@@ -332,7 +332,7 @@ def sa_one_lambda(parameters, n, fitness_function, fitness_parameters):
     F = parameters[1]
     r_init = parameters[2]
     bit_string = BitString(n)
-    fitness_value = fitness_function.result(fitness_parameters, n, bit_string)
+    fitness_value = fitness_function.result(fitness_parameters, bit_string)
     iterations = 1
     x = [1]
     y = [fitness_value]
@@ -350,7 +350,7 @@ def sa_one_lambda(parameters, n, fitness_function, fitness_parameters):
             else:
                 rs.append(F * r)
             new_bit_strings.append(bit_string.create_offspring_p(rs[i]/n))
-            new_fitness_values.append(fitness_function.result(fitness_parameters, n, new_bit_strings[i]))
+            new_fitness_values.append(fitness_function.result(fitness_parameters, new_bit_strings[i]))
             iterations += 1
         index_max = 0
         # Finding the bit_string with the maximum fitness value favoring a mutation rate of r/F in case of tie
@@ -380,7 +380,7 @@ def mu_plus_one_deterministic(parameters, n, fitness_function, fitness_parameter
     # Creation of mu random bit strings
     for i in range(mu):
         population.append(BitString(n))
-        fitness_values.append(fitness_function.result(fitness_parameters, n, population[i]))
+        fitness_values.append(fitness_function.result(fitness_parameters, population[i]))
         iterations += 1
     # Storing the best bit string in order to know when the algorithm stops
     index_max = np.argmax(fitness_values)
@@ -394,7 +394,7 @@ def mu_plus_one_deterministic(parameters, n, fitness_function, fitness_parameter
         # Picking one of the bit strings randomly and create an offspring from it
         index = random.randrange(mu)
         new_bit_string = population[index].create_offspring_p(1 / n)
-        new_fitness_value = fitness_function.result(fitness_parameters, n, new_bit_string)
+        new_fitness_value = fitness_function.result(fitness_parameters, new_bit_string)
         iterations += 1
         # If the offspring is better than the parent, the parent is replaced
         if new_fitness_value >= fitness_values[index]:
@@ -422,7 +422,7 @@ def mu_plus_one(operator, parameters, n, fitness_function, fitness_parameters):
     # Creating mu bit strings randomly
     for i in range(mu):
         population.append(BitString(n))
-        fitness_values.append(fitness_function.result(fitness_parameters, n, population[i]))
+        fitness_values.append(fitness_function.result(fitness_parameters, population[i]))
         iterations += 1
     # Storing the best bit string in order to know when the algorithm stops
     fitness_maximum = fitness_function.maximum(fitness_parameters, n)
@@ -449,7 +449,7 @@ def mu_plus_one(operator, parameters, n, fitness_function, fitness_parameters):
         else:
             raise Exception("Operator not defined")
         new_bit_string = population[index].create_offspring_p(1 / n)
-        new_fitness_value = fitness_function.result(fitness_parameters, n, new_bit_string)
+        new_fitness_value = fitness_function.result(fitness_parameters, new_bit_string)
         iterations += 1
         min_indexes = [0]
         fitness_min = fitness_values[0]
@@ -501,8 +501,8 @@ def compact_genetic_algorithm(parameters, n, fitness_function, fitness_parameter
                 y_string += "0"
         x.string = x_string
         y.string = y_string
-        x_fitness = fitness_function.result(fitness_parameters, n, x)
-        y_fitness = fitness_function.result(fitness_parameters, n, y)
+        x_fitness = fitness_function.result(fitness_parameters, x)
+        y_fitness = fitness_function.result(fitness_parameters, y)
         iterations += 2
         # Switch strings in order to have x as the best one
         if x_fitness < y_fitness:
