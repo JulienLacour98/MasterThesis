@@ -22,7 +22,7 @@ def frame_creation(root, title, start_page=False):
         # Button back to main page
         button = ttk.Button(root, text="Return to main page",
                             command=lambda: root.controller.show_frame(start_page))
-        button.grid(row=0, column=4, padx=5, pady=5)
+        button.grid(row=0, column=3, padx=5, pady=5)
 
 
 # Return the evolutionary algorithm with the input name
@@ -42,29 +42,60 @@ def find_fitness(fitness_name):
 
 
 # Build a graph with the x and y values
-def build_graph(root, labels, xs, ys, row, column, title, x_label, y_label):
+def build_plot(root, labels, xs, ys, row, column, title, x_label, y_label):
     fig = Figure(figsize=(6, 4), dpi=100)
     a = fig.add_subplot(111)
 
+    # Setting the title and axis labels
     a.set_title(title)
     a.set_xlabel(x_label)
     a.set_ylabel(y_label)
 
+    # Plotting all the plots, adding the label names
     for i in range(len(labels)):
         a.plot(xs[i], ys[i], '.', label=labels[i])
 
+    # If there is more than one plot, the legend is displayed on the left corner
     if len(labels) > 1:
         a.legend(loc='upper left', frameon=False)
 
+    # Creation of the canvas
     canvas = FigureCanvasTkAgg(fig, root)
     canvas.draw()
-    canvas.get_tk_widget().grid(row=row, column=column, padx=5, pady=5)
+    canvas.get_tk_widget().grid(row=row, column=column, columnspan=2, padx=5, pady=5)
 
+    # Creation of the toolbar, displayed under the graph
+    toolbar_frame = Frame(root)
+    toolbar_frame.grid(row=row+1, column=column, columnspan=2)
+    toolbar = NavigationToolbar2Tk(canvas, toolbar_frame)
+    toolbar.update()
+    canvas.get_tk_widget().grid(row=row, column=column, columnspan=2, padx=5, pady=5)
+
+
+# Build a graph with the x and y values
+def build_box_plot(root, x, y, row, column, title, x_label, y_label):
+    fig = Figure(figsize=(6, 4), dpi=100)
+    a = fig.add_subplot(111)
+
+    # Setting the title and axis labels
+    a.set_title(title)
+    a.set_xlabel(x_label)
+    a.set_ylabel(y_label)
+
+    # Plotting the box plot
+    a.boxplot(y, labels=x)
+
+    # Creation of the canvas
+    canvas = FigureCanvasTkAgg(fig, root)
+    canvas.draw()
+    canvas.get_tk_widget().grid(row=row, column=column, columnspan=2, padx=5, pady=5)
+
+    # Creation of the toolbar, displayed under the graph
     toolbar_frame = Frame(root)
     toolbar_frame.grid(row=row+1, column=column)
     toolbar = NavigationToolbar2Tk(canvas, toolbar_frame)
     toolbar.update()
-    canvas.get_tk_widget().grid(row=row, column=column, padx=5, pady=5)
+    canvas.get_tk_widget().grid(row=row, column=column, columnspan=2,  padx=5, pady=5)
 
 
 # Return an array with the default value of the parameters of the element
@@ -72,6 +103,7 @@ def default_parameters(element, size):
     parameter_values = []
     for parameter in element.parameters:
         parameter_value = IntVar()
+        # Get default value, which can be a function of the problem size
         parameter_value.set(update_parameter(parameter.default_value, size))
         parameter_values.append(parameter_value)
     return parameter_values

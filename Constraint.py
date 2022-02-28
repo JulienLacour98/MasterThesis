@@ -1,3 +1,6 @@
+import functools
+
+
 class Constraint:
 
     def __init__(self, name, description, condition):
@@ -9,21 +12,19 @@ class Constraint:
         return self.condition(element)
 
 
+# Return True if the element is an integer
 def is_integer(element):
     return str(element).isnumeric()
 
 
-def multiple_of_2(element):
-    return int(element) % 2 == 0
-
-
-def multiple_of_4(element):
-    return int(element) % 4 == 0
+# Return True if the element is a multiple of k
+def multiple_of_k(k, element):
+    return int(element) % k == 0
 
 
 INT = Constraint("INT", "This has to be an integer", is_integer)
-M2 = Constraint("M2", "This integer has to be a multiple of 2", multiple_of_2)
-M4 = Constraint("M4", "This integer has to be a multiple of 4", multiple_of_4)
+M2 = Constraint("M2", "This integer has to be a multiple of 2", functools.partial(multiple_of_k, 2))
+M4 = Constraint("M4", "This integer has to be a multiple of 4", functools.partial(multiple_of_k, 4))
 
 
 

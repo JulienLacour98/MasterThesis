@@ -4,7 +4,7 @@ import numpy as np
 
 class BitString:
 
-    # Generates a random bit string of length "size
+    # Generates a random bit string of length "size"
     def __init__(self, size=0):
         self.string = ""
         for i in range(size):
@@ -26,9 +26,11 @@ class BitString:
     # Flip s bits uniformly
     def create_offspring_s(self, s):
         n = len(self.string)
+        # Generates an array of "s" unique random integer in [0, n-1]
         indexes = random.sample(list(np.arange(0, n)), s)
         new_string = ""
         for i in range(n):
+            # Switch the randomly chosen bits
             if i in indexes:
                 new_string += str(1 - int(self.string[i]))
             else:
@@ -38,17 +40,21 @@ class BitString:
         return new_bit_string
 
     # Change the first 0 in the bitstring to 1
+    # Used in order to raise the norm by 1
     def add_one_one(self):
         new_string = ""
         i = 0
+        # Keep the same prefix of the bit string
         while i < len(self.string) and self.string[i] == "1":
             new_string += self.string[i]
             i += 1
+        # Switch the first 0 to 1
         if i < len(self.string):
             new_string += "1"
             i += 1
         else:
             raise Exception("Can't add any one to the only ones string")
+        # Keep the same suffix
         for j in range(i, len(self.string)):
             new_string += self.string[j]
         self.string = new_string

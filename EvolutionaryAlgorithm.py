@@ -1,5 +1,3 @@
-import functools
-import math
 import time
 
 
@@ -17,10 +15,12 @@ class EvolutionaryAlgorithm:
         self.name = name
         self.parameters = parameters
         self.algorithm = algorithm
+        # List with all the evolutionary algorithms
         evolutionary_algorithms.append(self)
+        # List with the names of the algorithms in order to display them in dropdown menus
         evolutionary_algorithm_names.append(self.name)
 
-    # Solve a fitness function with the algorithm and returns the number of iterations
+    # Solve a fitness function with the algorithm and returns the solution, running times and different iterations
     def solve(self, evolutionary_parameters, size, fitness_function, fitness_parameters):
         t1 = time.time()
         bit_string, iterations, x, y = self.algorithm(evolutionary_parameters,
@@ -136,6 +136,7 @@ def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters):
     g = False
     while not found_maximum:
         u = u + 1
+        # Stagnation Detection
         if g:
             # Creation of lambda offsprings
             new_bit_strings = []
@@ -170,6 +171,7 @@ def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters):
                 else:
                     new_r = r
         # g = False
+        # Self-Adjusting
         else:
             # Creation of lambda offsprings
             new_bit_strings = []
@@ -212,6 +214,8 @@ def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters):
                 else:
                     r = 2 * r
             new_r = min(max(2, r), n/4)
+            # After too many iterations, the strength and iterations are reset
+            # We go back to the Stagnation Detection
             if u > np.power(n / r, r) * np.power(n / (n - r), n - r) * math.log(math.exp(1) * n * R) / lbd:
                 new_r = 2
                 g = True
@@ -250,6 +254,7 @@ def sd_rls_r(parameters, n, fitness_function, fitness_parameters):
             r = 1
             s = 1
             u = 0
+        # If same value and strength is still 1, update bit-string
         elif new_fitness_value == fitness_value and r == 1:
             bit_string = new_bit_string
             fitness_value = new_fitness_value
@@ -274,6 +279,7 @@ def sd_rls_r(parameters, n, fitness_function, fitness_parameters):
 # Algorithm for the SD-RLS_m algorithm
 def sd_rls_m(parameters, n, fitness_function, fitness_parameters):
     R = parameters[0]
+    # Creation of a random bit-string of size n
     bit_string = BitString(n)
     fitness_value = fitness_function.result(fitness_parameters, bit_string)
     iterations = 1
@@ -297,6 +303,7 @@ def sd_rls_m(parameters, n, fitness_function, fitness_parameters):
             found_maximum = (fitness_value == fitness_maximum)
             x.append(iterations)
             y.append(fitness_value)
+            # Memory of the strength of the update
             r = s
             s = 1
             if r > 1:
@@ -304,6 +311,7 @@ def sd_rls_m(parameters, n, fitness_function, fitness_parameters):
             else:
                 B = float('inf')
             u = 0
+        # If same value and strength is still 1, update bit-string
         elif new_fitness_value == fitness_value and r == 1:
             bit_string = new_bit_string
             fitness_value = new_fitness_value
@@ -331,6 +339,7 @@ def sa_one_lambda(parameters, n, fitness_function, fitness_parameters):
     lbd = parameters[0]
     F = parameters[1]
     r_init = parameters[2]
+    # Creation of a random bit-string of size n
     bit_string = BitString(n)
     fitness_value = fitness_function.result(fitness_parameters, bit_string)
     iterations = 1
@@ -379,6 +388,7 @@ def mu_plus_one_deterministic(parameters, n, fitness_function, fitness_parameter
     iterations = 0
     # Creation of mu random bit strings
     for i in range(mu):
+        # Add the random bit string to the population
         population.append(BitString(n))
         fitness_values.append(fitness_function.result(fitness_parameters, population[i]))
         iterations += 1
@@ -434,9 +444,11 @@ def mu_plus_one(operator, parameters, n, fitness_function, fitness_parameters):
     found_maximum = (fitness_value == fitness_maximum)
     while not found_maximum:
         # Pick an element depending on the parent selection operator
+        # Uniformly at random
         if operator == "Uniform":
             # Pick a random element
             index = random.randrange(mu)
+        # Inverse K-tournament
         elif operator == "Inverse-K":
             # Pick K random element and select the worst one
             indexes = random.sample(list(range(0, mu)), K)
@@ -448,12 +460,13 @@ def mu_plus_one(operator, parameters, n, fitness_function, fitness_parameters):
                     fitness_min = fitness_values[idx]
         else:
             raise Exception("Operator not defined")
+        # Create an offspring using the selected bit string
         new_bit_string = population[index].create_offspring_p(1 / n)
         new_fitness_value = fitness_function.result(fitness_parameters, new_bit_string)
         iterations += 1
         min_indexes = [0]
         fitness_min = fitness_values[0]
-        # Get the worst bit string of the mu bit strings
+        # Get the worst bit string of the mu bit strings (breaking ties randomly) in order to replace it if better found
         for i in range(1, mu):
             if fitness_values[i] == fitness_min:
                 min_indexes.append(i)

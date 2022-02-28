@@ -31,7 +31,7 @@ class Parameter:
             raise Exception("Unknown parameter's type")
 
 
-# Update the min and max values of the parameter if it depends on the size of the problem
+# Return the correct value if it depends on the problem size
 def update_parameter(value, size):
     if value == "size":
         return size

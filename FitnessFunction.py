@@ -12,7 +12,9 @@ class FitnessFunction:
         self.size_constraint = size_constraint
         self.function = function
         self.function_maximum = function_maximum
+        # List with all the fitness functions
         fitness_functions.append(self)
+        # List with all the fitness function names used for dropdown menus
         fitness_function_names.append(self.name)
 
     # Return the image of the fitness function for the bit string
