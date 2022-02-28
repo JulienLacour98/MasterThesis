@@ -593,7 +593,3 @@ MuPlusOneInverseK = EvolutionaryAlgorithm("(mu+1) EA inverse K-tournament",
 # Creation of the compact Genetic Algorithm
 K = Parameter("K", "integer", 10, 1, float('inf'), INT)
 cGA = EvolutionaryAlgorithm("cGA", [K], compact_genetic_algorithm)
-
-
-
-

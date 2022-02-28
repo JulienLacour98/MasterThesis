@@ -25,6 +25,3 @@ def multiple_of_k(k, element):
 INT = Constraint("INT", "This has to be an integer", is_integer)
 M2 = Constraint("M2", "This integer has to be a multiple of 2", functools.partial(multiple_of_k, 2))
 M4 = Constraint("M4", "This integer has to be a multiple of 4", functools.partial(multiple_of_k, 4))
-
-
-

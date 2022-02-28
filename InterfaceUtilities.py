@@ -1,3 +1,5 @@
+import os
+import pandas as pd
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
@@ -53,7 +55,7 @@ def build_plot(root, labels, xs, ys, row, column, title, x_label, y_label):
 
     # Plotting all the plots, adding the label names
     for i in range(len(labels)):
-        a.plot(xs[i], ys[i], '.', label=labels[i])
+        a.plot(xs[i], ys[i], '.', label=labels[i][1])
 
     # If there is more than one plot, the legend is displayed on the left corner
     if len(labels) > 1:
@@ -66,10 +68,33 @@ def build_plot(root, labels, xs, ys, row, column, title, x_label, y_label):
 
     # Creation of the toolbar, displayed under the graph
     toolbar_frame = Frame(root)
-    toolbar_frame.grid(row=row+1, column=column, columnspan=2)
+    toolbar_frame.grid(row=row+1, column=column)
     toolbar = NavigationToolbar2Tk(canvas, toolbar_frame)
     toolbar.update()
     canvas.get_tk_widget().grid(row=row, column=column, columnspan=2, padx=5, pady=5)
+
+    # Button to extract data
+    button = ttk.Button(root, text="Download data",
+                        command=lambda: extract_data(labels, xs, ys))
+    button.grid(row=row+1, column=column+1, padx=5, pady=5)
+
+
+def extract_data(labels, xs, ys):
+
+    j = 0
+    while os.path.exists("../export/export%s.xlsx" % j):
+        j += 1
+
+    # Create a Pandas Excel writer using XlsxWriter as the engine.
+    writer = pd.ExcelWriter("../export/export" + str(j) + ".xlsx", engine="xlsxwriter")
+
+    for i in range(len(labels)):
+        df = pd.DataFrame()
+        df[labels[i][0]] = xs[i]
+        df[labels[i][1]] = ys[i]
+        df.to_excel(writer, sheet_name=(str(i+1) + " " + labels[i][1]))
+    # Close the Pandas Excel writer and output the Excel file.
+    writer.save()
 
 
 # Build a graph with the x and y values
@@ -107,4 +132,3 @@ def default_parameters(element, size):
         parameter_value.set(update_parameter(parameter.default_value, size))
         parameter_values.append(parameter_value)
     return parameter_values
-

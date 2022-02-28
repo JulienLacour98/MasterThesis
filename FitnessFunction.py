@@ -1,5 +1,3 @@
-import math
-
 from Parameter import *
 from Constraint import *
 

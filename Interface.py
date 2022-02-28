@@ -267,8 +267,8 @@ class DF(ActionInterface):
                 bit_string.add_one_one()
                 x[i + 1] = i + 1
                 y[i + 1] = self.fitness_function.result(fitness_parameter_values, bit_string)
-            build_plot(self, [self.fitness_function_name.get()], [x], [y], start_row, 2, self.fitness_function.name +
-                       " as a function of the norm", '|x|', 'f(x)')
+            build_plot(self, [("iterations", self.fitness_function_name.get())], [x], [y], start_row, 2,
+                       self.fitness_function.name + " as a function of the norm", '|x|', 'f(x)')
 
 
 # Interface displaying a run of an evolutionary algorithm on a fitness function
@@ -321,7 +321,7 @@ class R1(ActionInterface):
             tk.Label(self, text="The solution was found in " + str(iterations) + " iterations")\
                 .grid(row=start_row+1, column=1, padx=5, pady=5)
 
-            build_plot(self, [self.evolutionary_algorithm.name],  [x], [y], start_row+2, 1,
+            build_plot(self, [("Iterations", self.evolutionary_algorithm.name)],  [x], [y], start_row+2, 1,
                        "Improvements of the bit string", 'iterations', 'f(x)')
 
 
@@ -375,7 +375,7 @@ class RN(ActionInterface):
                                                                            fitness_parameter_values)
 
             tk.Label(self, text="The minimum number of iterations is: " + str(int(results.min()))) \
-                .grid(row=start_row , column=1, padx=5, pady=5)
+                .grid(row=start_row, column=1, padx=5, pady=5)
             tk.Label(self, text="The maximum number of iterations is: " + str(int(results.max()))) \
                 .grid(row=start_row + 1, column=1, padx=5, pady=5)
             tk.Label(self, text="The mean of the number of iterations is: " + str(round(results.mean(), 2))) \
@@ -441,7 +441,7 @@ class RNM(ActionInterface):
             y.append(round(results.mean(), 0))
             y_box_plot.append(results)
 
-        build_plot(self, [self.evolutionary_algorithm.name], [x], [y], start_row, 0,
+        build_plot(self, [("Iterations", self.evolutionary_algorithm.name)], [x], [y], start_row, 0,
                    "Plot of the mean of the runs as a function of the problem size", "Problem size", "Mean of the runs")
 
         build_box_plot(self, x, y_box_plot, start_row, 2,
@@ -510,7 +510,7 @@ class RKNM(ActionInterface):
             y.append(round(results.mean(), 0))
 
         # Add the plot to the already computed ones
-        self.labels.append(self.evolutionary_algorithm.name)
+        self.labels.append(("Iterations", self.evolutionary_algorithm.name))
         self.xs.append(x)
         self.ys.append(y)
 
@@ -529,5 +529,3 @@ class RKNM(ActionInterface):
         self.xs = []
         self.ys = []
         self.solve_k_n_m_times(start_row)
-
-

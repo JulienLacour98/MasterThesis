@@ -67,10 +67,8 @@ def only_zeros(size):
     return bit_string
 
 
-# Create bit string with only 0s
-def only_zeros(size):
+# Create bit string with only 1s
+def only_ones(size):
     bit_string = BitString()
-    bit_string.string = "0" * size
+    bit_string.string = "1" * size
     return bit_string
-
-

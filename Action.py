@@ -27,7 +27,3 @@ RunFromNtoM = Action("RNM",
 RunKFromNtoM = Action("RKNM",
                       "Comparison of several evolutionary algorithms on a fitness function "
                       "for a range of problem sizes")
-
-
-
-
