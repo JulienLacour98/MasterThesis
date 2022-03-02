@@ -1,4 +1,5 @@
 import os
+import multiprocessing
 import pandas as pd
 import tkinter as tk
 from tkinter import *
@@ -9,6 +10,9 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 from EvolutionaryAlgorithm import *
 from FitnessFunction import *
 
+# Total number of cores on the computer
+cores = multiprocessing.cpu_count()
+
 
 # Create frame with return button if not the main page
 def frame_creation(root, title, start_page=False):
@@ -17,14 +21,14 @@ def frame_creation(root, title, start_page=False):
 
     # Title of the page
     label = tk.Label(root, text=title, font=("Arial", 20))
-    label.grid(row=0, column=0, columnspan=3, padx=5, pady=5)
+    label.grid(row=0, column=0, columnspan=4, padx=5, pady=5)
 
     # Add return button
     if start_page:
         # Button back to main page
         button = ttk.Button(root, text="Return to main page",
                             command=lambda: root.controller.show_frame(start_page))
-        button.grid(row=0, column=3, padx=5, pady=5)
+        button.grid(row=0, column=4, padx=5, pady=5)
 
 
 # Return the evolutionary algorithm with the input name
@@ -74,31 +78,31 @@ def build_plot(root, labels, xs, ys, row, column, title, x_label, y_label):
     canvas.get_tk_widget().grid(row=row, column=column, columnspan=2, padx=5, pady=5)
 
     # Button to extract data
-    button = ttk.Button(root, text="Download data",
-                        command=lambda: extract_data(labels, xs, ys))
+    button = ttk.Button(root, text="Export data",
+                        command=lambda: extract_graph_data(labels, xs, ys))
     button.grid(row=row+1, column=column+1, padx=5, pady=5)
 
 
-def extract_data(labels, xs, ys):
-
+def extract_graph_data(labels, xs, ys):
     j = 0
-    while os.path.exists("../export/export%s.xlsx" % j):
+    while os.path.exists("../export/graph_export_%s.xlsx" % j):
         j += 1
 
     # Create a Pandas Excel writer using XlsxWriter as the engine.
-    writer = pd.ExcelWriter("../export/export" + str(j) + ".xlsx", engine="xlsxwriter")
+    writer = pd.ExcelWriter("../export/graph_export_" + str(j) + ".xlsx", engine="xlsxwriter")
 
     for i in range(len(labels)):
-        df = pd.DataFrame()
-        df[labels[i][0]] = xs[i]
-        df[labels[i][1]] = ys[i]
-        df.to_excel(writer, sheet_name=(str(i+1) + " " + labels[i][1]))
+        df = pd.DataFrame({
+            labels[i][0]: xs[i],
+            labels[i][1]: ys[i]
+        })
+        df.to_excel(writer, sheet_name=(str(i+1) + " " + labels[i][1]), index=False)
     # Close the Pandas Excel writer and output the Excel file.
     writer.save()
 
 
 # Build a graph with the x and y values
-def build_box_plot(root, x, y, row, column, title, x_label, y_label):
+def build_box_plot(root, x, ys, row, column, title, x_label, y_label):
     fig = Figure(figsize=(6, 4), dpi=100)
     a = fig.add_subplot(111)
 
@@ -108,7 +112,7 @@ def build_box_plot(root, x, y, row, column, title, x_label, y_label):
     a.set_ylabel(y_label)
 
     # Plotting the box plot
-    a.boxplot(y, labels=x)
+    a.boxplot(ys, labels=x)
 
     # Creation of the canvas
     canvas = FigureCanvasTkAgg(fig, root)
@@ -122,6 +126,27 @@ def build_box_plot(root, x, y, row, column, title, x_label, y_label):
     toolbar.update()
     canvas.get_tk_widget().grid(row=row, column=column, columnspan=2,  padx=5, pady=5)
 
+    # Button to extract data
+    button = ttk.Button(root, text="Export data",
+                        command=lambda: extract_box_plot_data(x, ys))
+    button.grid(row=row + 1, column=column + 1, padx=5, pady=5)
+
+
+# Extract all the number of iterations in the runs
+def extract_box_plot_data(x, ys):
+    j = 0
+    while os.path.exists("../export/full_export_%s.xlsx" % j):
+        j += 1
+
+    # Create a Pandas Excel writer using XlsxWriter as the engine.
+    writer = pd.ExcelWriter("../export/full_export_" + str(j) + ".xlsx", engine="xlsxwriter")
+    df = pd.DataFrame()
+    for i in range(len(x)):
+        df[str(x[i])] = ys[i]
+    df.to_excel(writer, index=True)
+    # Close the Pandas Excel writer and output the Excel file.
+    writer.save()
+
 
 # Return an array with the default value of the parameters of the element
 def default_parameters(element, size):
@@ -132,3 +157,25 @@ def default_parameters(element, size):
         parameter_value.set(update_parameter(parameter.default_value, size))
         parameter_values.append(parameter_value)
     return parameter_values
+
+
+# Function running n times an algorithm on a fitness function using parallel programming
+def run_parallel(iterations, size, evolutionary_algorithm, evolutionary_parameter_values,
+                 fitness_function, fitness_parameter_values):
+    pool = multiprocessing.Pool(cores)
+    results = pool.map(functools.partial(solve_partial,
+                       size, evolutionary_algorithm, evolutionary_parameter_values,
+                       fitness_function, fitness_parameter_values), range(iterations))
+    pool.close()
+    return np.array(results)
+
+
+# Function solving an evolutionary algorithm on a fitness function and
+# returning the number of call to the fitness function
+def solve_partial(size, evolutionary_algorithm, evolutionary_parameter_values,
+                  fitness_function, fitness_parameter_values, i):
+    _, iterations, _, _, _ = evolutionary_algorithm.solve(evolutionary_parameter_values,
+                                                          size, fitness_function, fitness_parameter_values)
+    return iterations
+
+

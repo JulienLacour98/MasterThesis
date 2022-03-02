@@ -30,13 +30,13 @@ class MainInterface(tk.Tk):
             class_name = globals()[action.name]
             # Set default values for problem size and number of iterations
             problem_size = IntVar()
-            problem_size.set(60)
+            problem_size.set(80)
             problem_size_end = IntVar()
-            problem_size_end.set(120)
+            problem_size_end.set(160)
             step = IntVar()
-            step.set(10)
+            step.set(20)
             iterations = IntVar()
-            iterations.set(100)
+            iterations.set(1000)
             fitness_function_name = StringVar()
             fitness_function_name.set(fitness_function_names[0])
             evolutionary_algorithm_name = StringVar()
@@ -61,8 +61,10 @@ class MainInterface(tk.Tk):
 
 
 def main():
-    main_interface = MainInterface()
-    main_interface.mainloop()
+
+    if __name__ == "__main__":
+        main_interface = MainInterface()
+        main_interface.mainloop()
 
 
 main()

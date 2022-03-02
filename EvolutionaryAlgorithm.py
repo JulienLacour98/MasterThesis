@@ -5,9 +5,6 @@ from Parameter import *
 from Constraint import *
 from BitString import *
 
-# TODO - For parameter constraints, |Im(f)| is considered to be inferior than n^3
-#  which is the case for most fitness functions atm
-
 
 class EvolutionaryAlgorithm:
 
@@ -552,6 +549,7 @@ SDOnePlusOne = EvolutionaryAlgorithm("SD-(1+1) EA", [paramR], sd_one_plus_one)
 
 # Creation of the SASD-(1+lambda) EA
 # Lambda -> Number of offsprings created from the parent
+# size^3 because threshold whe,n |Im(f)| is considered unknown
 Lambda = Parameter("Lambda", "integer", 10, 2, float('inf'), M2)
 Initial_Strength = Parameter("Initial strength", "integer", 1, 1, "size/2", INT)
 paramR = Parameter("R", "integer", "size^3", "size^3", float('inf'), INT)

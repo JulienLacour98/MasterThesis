@@ -1,5 +1,4 @@
 # TODO - Clean how the classes are created -> try to remove useless attributes from main classes
-
 from Action import *
 from InterfaceUtilities import *
 
@@ -366,14 +365,9 @@ class RN(ActionInterface):
             evolutionary_parameter_values = []
             for evolutionary_parameter_value in self.evolutionary_parameter_values:
                 evolutionary_parameter_values.append(evolutionary_parameter_value.get())
-            results = np.empty(iterations)
             # Adding the number of iterations of each run in an array
-            for i in range(iterations):
-                _, results[i], _, _, _ = self.evolutionary_algorithm.solve(evolutionary_parameter_values,
-                                                                           problem_size,
-                                                                           self.fitness_function,
-                                                                           fitness_parameter_values)
-
+            results = run_parallel(iterations, problem_size, self.evolutionary_algorithm, evolutionary_parameter_values,
+                                   self.fitness_function, fitness_parameter_values)
             tk.Label(self, text="The minimum number of iterations is: " + str(int(results.min()))) \
                 .grid(row=start_row, column=1, padx=5, pady=5)
             tk.Label(self, text="The maximum number of iterations is: " + str(int(results.max()))) \
@@ -431,17 +425,14 @@ class RNM(ActionInterface):
         # For every length in the range, adding the mean to the plot and the iteration values to create a boxplot
         for i in range(problem_size, problem_size_end+1, step):
             print("Problem size: " + str(i))
-            results = np.empty(iterations)
-            for j in range(iterations):
-                _, results[j], _, _, _ = self.evolutionary_algorithm.solve(evolutionary_parameter_values,
-                                                                           i,
-                                                                           self.fitness_function,
-                                                                           fitness_parameter_values)
+            results = run_parallel(iterations, i, self.evolutionary_algorithm, evolutionary_parameter_values,
+                                   self.fitness_function, fitness_parameter_values)
             x.append(i)
             y.append(round(results.mean(), 0))
             y_box_plot.append(results)
+        print("Problem size: Done")
 
-        build_plot(self, [("Iterations", self.evolutionary_algorithm.name)], [x], [y], start_row, 0,
+        build_plot(self, [("Problem size", self.evolutionary_algorithm.name)], [x], [y], start_row, 0,
                    "Plot of the mean of the runs as a function of the problem size", "Problem size", "Mean of the runs")
 
         build_box_plot(self, x, y_box_plot, start_row, 2,
@@ -500,15 +491,11 @@ class RKNM(ActionInterface):
         # For every length in the range it adds the mean to the plot
         for i in range(problem_size, problem_size_end + 1, step):
             print("Problem size: " + str(i))
-            results = np.empty(iterations)
-            for j in range(iterations):
-                _, results[j], _, _, _ = self.evolutionary_algorithm.solve(evolutionary_parameter_values,
-                                                                           i,
-                                                                           self.fitness_function,
-                                                                           fitness_parameter_values)
+            results = run_parallel(iterations, i, self.evolutionary_algorithm, evolutionary_parameter_values,
+                                   self.fitness_function, fitness_parameter_values)
             x.append(i)
             y.append(round(results.mean(), 0))
-
+        print("Problem size: Done")
         # Add the plot to the already computed ones
         self.labels.append(("Iterations", self.evolutionary_algorithm.name))
         self.xs.append(x)
