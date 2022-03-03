@@ -1,4 +1,4 @@
-from Interface import *
+from Script import *
 
 
 class MainInterface(tk.Tk):
@@ -60,11 +60,19 @@ class MainInterface(tk.Tk):
         frame.tkraise()
 
 
-def main():
+def display_interface():
+    main_interface = MainInterface()
+    main_interface.mainloop()
 
+
+def main():
     if __name__ == "__main__":
-        main_interface = MainInterface()
-        main_interface.mainloop()
+        # Display Interface
+        if sys.argv[1] == "0":
+            display_interface()
+        # Run the first analysis
+        elif sys.argv[1] == "1":
+            script_1(int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]))
 
 
 main()

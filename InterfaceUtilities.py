@@ -1,5 +1,7 @@
 import os
 import multiprocessing
+import sys
+
 import pandas as pd
 import tkinter as tk
 from tkinter import *
@@ -80,13 +82,18 @@ def build_plot(root, labels, xs, ys, row, column, title, x_label, y_label):
 
     # Button to extract data
     button = ttk.Button(root, text="Export data",
-                        command=lambda: extract_graph_data(labels, xs, ys))
+                        command=lambda: extract_graph_data(root.action, labels, xs, ys))
     button.grid(row=row+1, column=column+1, padx=5, pady=5)
 
 
-def extract_graph_data(labels, xs, ys):
+def extract_graph_data(action, labels, xs, ys):
+    # Create folders if they don't exist
+    if not os.path.exists("export"):
+        os.mkdir("export")
+    if not os.path.exists(f"export/{action.folder_name}"):
+        os.mkdir("export/" + action.folder_name)
     # Create a Pandas Excel writer using XlsxWriter as the engine.
-    writer = pd.ExcelWriter("export/" + datetime.now().strftime("%y%m%d_%H%M%S") + + "_graph_export.xlsx",
+    writer = pd.ExcelWriter(f"export/{action.folder_name}/{datetime.now().strftime('%y%m%d_%H%M%S')}.xlsx",
                             engine="xlsxwriter")
 
     for i in range(len(labels)):
@@ -126,21 +133,26 @@ def build_box_plot(root, label,  x, ys, row, column, title, x_label, y_label):
 
     # Button to extract data
     button = ttk.Button(root, text="Export data",
-                        command=lambda: extract_full_data([label], [x], [ys]))
+                        command=lambda: extract_full_data(root.action, [label], [x], [ys]))
     button.grid(row=row + 1, column=column + 1, padx=5, pady=5)
 
 
 def extract_full_data_button(root, labels, xs, yss, row, column):
     # Button to extract data
     button = ttk.Button(root, text="Export All Data",
-                        command=lambda: extract_full_data(labels, xs, yss))
+                        command=lambda: extract_full_data(root.action, labels, xs, yss))
     button.grid(row=row, column=column, padx=5, pady=5)
 
 
 # Extract all the number of iterations in the runs
-def extract_full_data(labels, xs, yss):
+def extract_full_data(action, labels, xs, yss):
+    # Create folders if they don't exist
+    if not os.path.exists("export"):
+        os.mkdir("export")
+    if not os.path.exists(f"export/{action.folder_name}"):
+        os.mkdir("export/" + action.folder_name)
     # Create a Pandas Excel writer using XlsxWriter as the engine.
-    writer = pd.ExcelWriter("export/" + datetime.now().strftime("%y%m%d_%H%M%S") + "_full_export" + ".xlsx",
+    writer = pd.ExcelWriter(f"export/{action.folder_name}/{datetime.now().strftime('%y%m%d_%H%M%S')}.xlsx",
                             engine="xlsxwriter")
     for i in range(len(labels)):
         df = pd.DataFrame()
@@ -155,10 +167,15 @@ def extract_full_data(labels, xs, yss):
 def default_parameters(element, size):
     parameter_values = []
     for parameter in element.parameters:
-        parameter_value = IntVar()
-        # Get default value, which can be a function of the problem size
-        parameter_value.set(update_parameter(parameter.default_value, size))
-        parameter_values.append(parameter_value)
+        # If we use the interface, create an IntVar
+        if sys.argv[1] == "0":
+            parameter_value = IntVar()
+            # Get default value, which can be a function of the problem size
+            parameter_value.set(update_parameter(parameter.default_value, size))
+            parameter_values.append(parameter_value)
+        # If running a script, just use normal integers
+        else:
+            parameter_values.append(update_parameter(parameter.default_value, size))
     return parameter_values
 
 
