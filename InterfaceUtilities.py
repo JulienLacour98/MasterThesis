@@ -6,6 +6,7 @@ from tkinter import *
 from tkinter import ttk
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+from datetime import datetime
 
 from EvolutionaryAlgorithm import *
 from FitnessFunction import *
@@ -84,12 +85,9 @@ def build_plot(root, labels, xs, ys, row, column, title, x_label, y_label):
 
 
 def extract_graph_data(labels, xs, ys):
-    j = 0
-    while os.path.exists("../export/graph_export_%s.xlsx" % j):
-        j += 1
-
     # Create a Pandas Excel writer using XlsxWriter as the engine.
-    writer = pd.ExcelWriter("../export/graph_export_" + str(j) + ".xlsx", engine="xlsxwriter")
+    writer = pd.ExcelWriter("export/" + datetime.now().strftime("%y%m%d_%H%M%S") + + "_graph_export.xlsx",
+                            engine="xlsxwriter")
 
     for i in range(len(labels)):
         df = pd.DataFrame({
@@ -102,7 +100,7 @@ def extract_graph_data(labels, xs, ys):
 
 
 # Build a graph with the x and y values
-def build_box_plot(root, x, ys, row, column, title, x_label, y_label):
+def build_box_plot(root, label,  x, ys, row, column, title, x_label, y_label):
     fig = Figure(figsize=(6, 4), dpi=100)
     a = fig.add_subplot(111)
 
@@ -128,22 +126,27 @@ def build_box_plot(root, x, ys, row, column, title, x_label, y_label):
 
     # Button to extract data
     button = ttk.Button(root, text="Export data",
-                        command=lambda: extract_box_plot_data(x, ys))
+                        command=lambda: extract_full_data([label], [x], [ys]))
     button.grid(row=row + 1, column=column + 1, padx=5, pady=5)
 
 
-# Extract all the number of iterations in the runs
-def extract_box_plot_data(x, ys):
-    j = 0
-    while os.path.exists("../export/full_export_%s.xlsx" % j):
-        j += 1
+def extract_full_data_button(root, labels, xs, yss, row, column):
+    # Button to extract data
+    button = ttk.Button(root, text="Export All Data",
+                        command=lambda: extract_full_data(labels, xs, yss))
+    button.grid(row=row, column=column, padx=5, pady=5)
 
+
+# Extract all the number of iterations in the runs
+def extract_full_data(labels, xs, yss):
     # Create a Pandas Excel writer using XlsxWriter as the engine.
-    writer = pd.ExcelWriter("../export/full_export_" + str(j) + ".xlsx", engine="xlsxwriter")
-    df = pd.DataFrame()
-    for i in range(len(x)):
-        df[str(x[i])] = ys[i]
-    df.to_excel(writer, index=True)
+    writer = pd.ExcelWriter("export/" + datetime.now().strftime("%y%m%d_%H%M%S") + "_full_export" + ".xlsx",
+                            engine="xlsxwriter")
+    for i in range(len(labels)):
+        df = pd.DataFrame()
+        for j in range(len(xs[i])):
+            df[str(xs[i][j])] = yss[i][j]
+        df.to_excel(writer,  sheet_name=(str(i+1) + " " + labels[i]), index=True)
     # Close the Pandas Excel writer and output the Excel file.
     writer.save()
 

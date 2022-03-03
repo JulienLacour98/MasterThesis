@@ -11,5 +11,5 @@ The following libraries need to be imported:
 - XlsxWriter
 
 # Directory
-- In order to export the data from graphs, create an "export" directory in the same folder than "MasterThesis". 
+- In order to export the data from graphs, create an "export" directory inside the folder "MasterThesis". 
 The export files will be generated in this folder.

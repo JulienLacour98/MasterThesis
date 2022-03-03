@@ -19,7 +19,7 @@ class ActionInterface(Interface):
                  problem_size, problem_size_end, step, iterations,
                  fitness_function_name, fitness_parameter_values,
                  evolutionary_algorithm_name, evolutionary_parameter_values,
-                 labels, xs, ys):
+                 labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller)
         self.action = action
@@ -38,6 +38,7 @@ class ActionInterface(Interface):
         self.labels = labels
         self.xs = xs
         self.ys = ys
+        self.yss = yss
 
         frame_creation(self, action.description, StartPage)
 
@@ -231,12 +232,12 @@ class DF(ActionInterface):
     def __init__(self, class_name, parent, controller, action,
                  problem_size, problem_size_end, step, iterations,
                  fitness_function, fitness_parameter_values,
-                 evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys):
+                 evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
                          problem_size, problem_size_end, step, iterations,
                          fitness_function, fitness_parameter_values,
-                         evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys)
+                         evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss)
 
         row = self.choice_of_problem_size(2)
         fitness_row = self.choice_of_fitness_function(row)
@@ -266,7 +267,7 @@ class DF(ActionInterface):
                 bit_string.add_one_one()
                 x[i + 1] = i + 1
                 y[i + 1] = self.fitness_function.result(fitness_parameter_values, bit_string)
-            build_plot(self, [("iterations", self.fitness_function_name.get())], [x], [y], start_row, 2,
+            build_plot(self, [("Problem size", self.fitness_function_name.get())], [x], [y], start_row, 2,
                        self.fitness_function.name + " as a function of the norm", '|x|', 'f(x)')
 
 
@@ -276,12 +277,12 @@ class R1(ActionInterface):
     def __init__(self, class_name, parent, controller, action,
                  problem_size, problem_size_end, step, iterations,
                  fitness_function, fitness_parameter_values,
-                 evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys):
+                 evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
                          problem_size, problem_size_end, step, iterations,
                          fitness_function, fitness_parameter_values,
-                         evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys)
+                         evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss)
 
         row = self.choice_of_problem_size(2)
         fitness_row = self.choice_of_fitness_function(row)
@@ -330,12 +331,12 @@ class RN(ActionInterface):
     def __init__(self, class_name, parent, controller, action,
                  problem_size, problem_size_end, step, iterations,
                  fitness_function, fitness_parameter_values,
-                 evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys):
+                 evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
                          problem_size, problem_size_end, step, iterations,
                          fitness_function, fitness_parameter_values,
-                         evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys)
+                         evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss)
 
         row = self.choice_of_problem_size(2)
         row = self.choice_of_number_of_iterations(row)
@@ -380,6 +381,9 @@ class RN(ActionInterface):
             tk.Label(self, text="The median of the number of iterations is: " + str(int(np.median(results)))) \
                 .grid(row=start_row + 4, column=1, padx=5, pady=5)
 
+            extract_full_data_button(self, [self.evolutionary_algorithm.name], [[problem_size]], [[results]],
+                                     start_row + 5, 1)
+
 
 # Interface for running an evolutionary algorithm n times on a fitness function for a range of length
 class RNM(ActionInterface):
@@ -387,12 +391,12 @@ class RNM(ActionInterface):
     def __init__(self, class_name, parent, controller, action,
                  problem_size, problem_size_end, step, iterations,
                  fitness_function, fitness_parameter_values,
-                 evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys):
+                 evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
                          problem_size, problem_size_end, step, iterations,
                          fitness_function, fitness_parameter_values,
-                         evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys)
+                         evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss)
 
         row = self.choice_of_problem_range(2)
         row = self.choice_of_number_of_iterations(row)
@@ -435,7 +439,7 @@ class RNM(ActionInterface):
         build_plot(self, [("Problem size", self.evolutionary_algorithm.name)], [x], [y], start_row, 0,
                    "Plot of the mean of the runs as a function of the problem size", "Problem size", "Mean of the runs")
 
-        build_box_plot(self, x, y_box_plot, start_row, 2,
+        build_box_plot(self, self.evolutionary_algorithm.name, x, y_box_plot, start_row, 2,
                        "Box plot of the number of iterations as a function of the problem size",
                        "Problem_size", "Iterations")
 
@@ -446,12 +450,12 @@ class RKNM(ActionInterface):
     def __init__(self, class_name, parent, controller, action,
                  problem_size, problem_size_end, step, iterations,
                  fitness_function, fitness_parameter_values,
-                 evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys):
+                 evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
                          problem_size, problem_size_end, step, iterations,
                          fitness_function, fitness_parameter_values,
-                         evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys)
+                         evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss)
 
         row = self.choice_of_problem_range(2)
         row = self.choice_of_number_of_iterations(row)
@@ -488,6 +492,7 @@ class RKNM(ActionInterface):
             evolutionary_parameter_values.append(evolutionary_parameter_value.get())
         x = []
         y = []
+        ys = []
         # For every length in the range it adds the mean to the plot
         for i in range(problem_size, problem_size_end + 1, step):
             print("Problem size: " + str(i))
@@ -495,13 +500,21 @@ class RKNM(ActionInterface):
                                    self.fitness_function, fitness_parameter_values)
             x.append(i)
             y.append(round(results.mean(), 0))
+            ys.append(results)
         print("Problem size: Done")
         # Add the plot to the already computed ones
         self.labels.append(("Iterations", self.evolutionary_algorithm.name))
         self.xs.append(x)
         self.ys.append(y)
+        self.yss.append(ys)
 
-        build_plot(self, self.labels, self.xs, self.ys, start_row, 2,
+        sheet_names = []
+        for i in range(len(self.labels)):
+            sheet_names.append(self.labels[i][1])
+
+        extract_full_data_button(self, sheet_names, self.xs, self.yss, start_row-1, 1)
+
+        build_plot(self, self.labels , self.xs, self.ys, start_row, 2,
                    "Comparison of different algorithms on " + self.fitness_function_name.get(),
                    "Problem size", "Mean of the runs")
 
@@ -515,4 +528,5 @@ class RKNM(ActionInterface):
         self.labels = []
         self.xs = []
         self.ys = []
+        self.yss = []
         self.solve_k_n_m_times(start_row)

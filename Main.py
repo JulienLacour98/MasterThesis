@@ -49,7 +49,7 @@ class MainInterface(tk.Tk):
                                evolutionary_algorithm_name,
                                default_parameters(find_evolutionary(evolutionary_algorithm_name.get()),
                                                   problem_size.get()),
-                               [], [], [])
+                               [], [], [], [])
             self.frames[class_name] = frame
             frame.grid(row=0, column=0, sticky="nsew")
         self.show_frame(StartPage)
