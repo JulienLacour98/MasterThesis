@@ -62,7 +62,7 @@ def build_plot(root, labels, xs, ys, row, column, title, x_label, y_label):
 
     # Plotting all the plots, adding the label names
     for i in range(len(labels)):
-        a.plot(xs[i], ys[i], '.', label=labels[i][1])
+        a.plot(xs[i], ys[i], '.', label=labels[i][2])
 
     # If there is more than one plot, the legend is displayed on the left corner
     if len(labels) > 1:
@@ -101,7 +101,7 @@ def extract_graph_data(action, labels, xs, ys):
             labels[i][0]: xs[i],
             labels[i][1]: ys[i]
         })
-        df.to_excel(writer, sheet_name=(str(i+1) + " " + labels[i][1]), index=False)
+        df.to_excel(writer, sheet_name=(str(i+1) + " " + labels[i][2]), index=False)
     # Close the Pandas Excel writer and output the Excel file.
     writer.save()
 
@@ -133,26 +133,27 @@ def build_box_plot(root, label,  x, ys, row, column, title, x_label, y_label):
 
     # Button to extract data
     button = ttk.Button(root, text="Export data",
-                        command=lambda: extract_full_data(root.action, [label], [x], [ys]))
+                        command=lambda: extract_full_data(root, [label], [x], [ys]))
     button.grid(row=row + 1, column=column + 1, padx=5, pady=5)
 
 
 def extract_full_data_button(root, labels, xs, yss, row, column):
     # Button to extract data
     button = ttk.Button(root, text="Export All Data",
-                        command=lambda: extract_full_data(root.action, labels, xs, yss))
+                        command=lambda: extract_full_data(root, labels, xs, yss))
     button.grid(row=row, column=column, padx=5, pady=5)
 
 
 # Extract all the number of iterations in the runs
-def extract_full_data(action, labels, xs, yss):
+def extract_full_data(root, labels, xs, yss):
     # Create folders if they don't exist
     if not os.path.exists("export"):
         os.mkdir("export")
-    if not os.path.exists(f"export/{action.folder_name}"):
-        os.mkdir("export/" + action.folder_name)
+    if not os.path.exists(f"export/{root.action.folder_name}"):
+        os.mkdir(f"export/{root.action.folder_name}")
     # Create a Pandas Excel writer using XlsxWriter as the engine.
-    writer = pd.ExcelWriter(f"export/{action.folder_name}/{datetime.now().strftime('%y%m%d_%H%M%S')}.xlsx",
+    writer = pd.ExcelWriter(f"export/{root.action.folder_name}/{datetime.now().strftime('%y%m%d_%H%M%S')}_"
+                            f"{root.fitness_function_name.get()}.xlsx",
                             engine="xlsxwriter")
     for i in range(len(labels)):
         df = pd.DataFrame()

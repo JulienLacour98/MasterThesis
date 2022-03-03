@@ -42,7 +42,7 @@ def script_1(start_length, end_length, length_step, runs):
         df.to_excel(writer, sheet_name=evolutionary_algorithms[i].name, index=True)
 
     # Add a sheet with the means
-    df = pd.DataFrame({"Lengths/Algorithms:": lengths})
+    df = pd.DataFrame({"Problem size": lengths})
     for i in range(len(evolutionary_algorithms)):
         df[evolutionary_algorithms[i].name] = means[i]
     df.to_excel(writer, sheet_name="Means", index=False)

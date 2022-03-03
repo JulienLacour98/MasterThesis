@@ -79,7 +79,7 @@ class ActionInterface(Interface):
                                     default_parameters(fitness_function, self.problem_size.get()),
                                     self.evolutionary_algorithm_name,
                                     self.evolutionary_parameter_values,
-                                    [], [], [])
+                                    [], [], [], [])
         new_frame.grid(row=0, column=0, sticky="nsew")
         # Display this new frame
         new_frame.tkraise()
@@ -124,7 +124,7 @@ class ActionInterface(Interface):
                                     self.fitness_function_name, self.fitness_parameter_values,
                                     new_evolutionary_name,
                                     default_parameters(evolutionary_algorithm, self.problem_size.get()),
-                                    self.labels, self.xs, self.ys)
+                                    self.labels, self.xs, self.ys, self.yss)
         new_frame.grid(row=0, column=0, sticky="nsew")
         new_frame.tkraise()
         # Reset name for consistency
@@ -267,7 +267,7 @@ class DF(ActionInterface):
                 bit_string.add_one_one()
                 x[i + 1] = i + 1
                 y[i + 1] = self.fitness_function.result(fitness_parameter_values, bit_string)
-            build_plot(self, [("Problem size", self.fitness_function_name.get())], [x], [y], start_row, 2,
+            build_plot(self, [("|x|", "f(|x|)", self.fitness_function_name.get())], [x], [y], start_row, 2,
                        self.fitness_function.name + " as a function of the norm", '|x|', 'f(x)')
 
 
@@ -321,8 +321,8 @@ class R1(ActionInterface):
             tk.Label(self, text="The solution was found in " + str(iterations) + " iterations")\
                 .grid(row=start_row+1, column=1, padx=5, pady=5)
 
-            build_plot(self, [("Iterations", self.evolutionary_algorithm.name)],  [x], [y], start_row+2, 1,
-                       "Improvements of the bit string", 'iterations', 'f(x)')
+            build_plot(self, [("Iteration", self.fitness_function_name.get(), self.evolutionary_algorithm.name)],
+                       [x], [y], start_row+2, 1, "Improvements of the bit string", 'iterations', 'f(x)')
 
 
 # Interface for running an evolutionary algorithm n times on a fitness function and returning statistics
@@ -381,7 +381,7 @@ class RN(ActionInterface):
             tk.Label(self, text="The median of the number of iterations is: " + str(int(np.median(results)))) \
                 .grid(row=start_row + 4, column=1, padx=5, pady=5)
 
-            extract_full_data_button(self, [self.evolutionary_algorithm.name], [[problem_size]], [[results]],
+            extract_full_data_button(self, [self.fitness_function.name], [[problem_size]], [[results]],
                                      start_row + 5, 1)
 
 
@@ -436,9 +436,9 @@ class RNM(ActionInterface):
             y_box_plot.append(results)
         print("Problem size: Done")
 
-        build_plot(self, [("Problem size", self.evolutionary_algorithm.name)], [x], [y], start_row, 0,
+        build_plot(self, [("Problem size", self.fitness_function_name.get(), self.evolutionary_algorithm_name.get())],
+                   [x], [y], start_row, 0,
                    "Plot of the mean of the runs as a function of the problem size", "Problem size", "Mean of the runs")
-
         build_box_plot(self, self.evolutionary_algorithm.name, x, y_box_plot, start_row, 2,
                        "Box plot of the number of iterations as a function of the problem size",
                        "Problem_size", "Iterations")
@@ -503,14 +503,14 @@ class RKNM(ActionInterface):
             ys.append(results)
         print("Problem size: Done")
         # Add the plot to the already computed ones
-        self.labels.append(("Iterations", self.evolutionary_algorithm.name))
+        self.labels.append(("Iterations", self.fitness_function_name.get(), self.evolutionary_algorithm_name.get()))
         self.xs.append(x)
         self.ys.append(y)
         self.yss.append(ys)
 
         sheet_names = []
         for i in range(len(self.labels)):
-            sheet_names.append(self.labels[i][1])
+            sheet_names.append(self.labels[i][2])
 
         extract_full_data_button(self, sheet_names, self.xs, self.yss, start_row-1, 1)
 
