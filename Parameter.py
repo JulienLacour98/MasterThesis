@@ -13,13 +13,15 @@ class Parameter:
         self.constraint = constraint
 
     # Checking that the value is of the right type and that it is in between the min and max values
-    def is_value_valid(self, value, size):
+    def is_value_valid(self, value, size_start, size_end):
         if self.parameter_type == "integer":
             if not str(value).isnumeric():
                 return "It has to be an integer"
             else:
-                min_value = update_parameter(self.min_value, size)
-                max_value = update_parameter(self.max_value, size)
+                min_value = max(update_parameter(self.min_value, size_start),
+                                update_parameter(self.min_value, size_end))
+                max_value = min(update_parameter(self.max_value, size_start),
+                                update_parameter(self.max_value, size_end))
                 if min_value <= value <= max_value:
                     if self.constraint.check_condition(value):
                         return "correct"

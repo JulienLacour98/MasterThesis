@@ -3,7 +3,7 @@ from Interface import *
 
 
 # Evaluate all the algorithms on OneMax
-def script_1(start_length, end_length, length_step, runs):
+def script_1(start_length, end_length, length_step, runs, nb_cores):
     # Create array with all the length analysed
     lengths = []
     for iteration in range(start_length, end_length + 1, length_step):
@@ -23,7 +23,8 @@ def script_1(start_length, end_length, length_step, runs):
                                            evolutionary_algorithms[i],
                                            default_parameters(evolutionary_algorithms[i], lengths[j]),
                                            OneMax,
-                                           default_parameters(OneMax, lengths[j])))
+                                           default_parameters(OneMax, lengths[j]),
+                                           nb_cores))
             means[i].append(round(results[i][j].mean(), 2))
 
     # Create a Pandas Excel writer using XlsxWriter as the engine.

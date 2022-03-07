@@ -13,9 +13,6 @@ from datetime import datetime
 from EvolutionaryAlgorithm import *
 from FitnessFunction import *
 
-# Total number of cores on the computer
-cores = multiprocessing.cpu_count()
-
 
 # Create frame with return button if not the main page
 def frame_creation(root, title, start_page=False):
@@ -182,7 +179,7 @@ def default_parameters(element, size):
 
 # Function running n times an algorithm on a fitness function using parallel programming
 def run_parallel(iterations, size, evolutionary_algorithm, evolutionary_parameter_values,
-                 fitness_function, fitness_parameter_values):
+                 fitness_function, fitness_parameter_values, cores):
     pool = multiprocessing.Pool(cores)
     results = pool.map(functools.partial(solve_partial,
                        size, evolutionary_algorithm, evolutionary_parameter_values,

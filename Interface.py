@@ -3,6 +3,10 @@ from Action import *
 from InterfaceUtilities import *
 
 
+# Total number of cores on the computer
+cores = int(multiprocessing.cpu_count()/2)
+
+
 # Parent class for all the interfaces
 class Interface(tk.Frame):
 
@@ -172,6 +176,28 @@ class ActionInterface(Interface):
         # Return true if all the constraint are respected
         return valid
 
+    # Checking that the length range is consistent with the constraint of the fitness function
+    # Display constraint if not respected / Erase if respected
+    def check_range(self, size_row, size_column, step_row, step_column):
+        valid = True
+        size_constraint = self.fitness_function.size_constraint
+        # erasing previous information message
+        for label in self.grid_slaves(size_row, size_column) + self.grid_slaves(step_row, step_column):
+            label.grid_forget()
+        # Check that the range is correct
+        if not self.problem_size.get() <= self.problem_size_end.get():
+            tk.Label(self, text="Incorrect range").grid(row=size_row, column=size_column, padx=5, pady=5)
+            valid = False
+        # If a constraint is not respected, display it to the user
+        elif not size_constraint.check_condition(self.problem_size.get()):
+            tk.Label(self, text=size_constraint.description).grid(row=size_row, column=size_column, padx=5, pady=5)
+            valid = False
+        if not size_constraint.check_condition(self.step.get()):
+            tk.Label(self, text=size_constraint.description).grid(row=step_row, column=step_column, padx=5, pady=5)
+            valid = False
+        # Return true if all the constraint are respected
+        return valid
+
     # Check that the fitness parameters respect all the constraint
     # Display constraint if not respected / Erase if respected
     def check_fitness_parameters(self, fitness_row, fitness_column):
@@ -182,7 +208,7 @@ class ActionInterface(Interface):
             for label in self.grid_slaves(fitness_row + i, fitness_column):
                 label.grid_forget()
             correctness = fitness_parameters[i].is_value_valid(self.fitness_parameter_values[i].get(),
-                                                               self.problem_size.get())
+                                                               self.problem_size.get(), self.problem_size_end.get())
             # If a constraint is not respected, display it to the user
             if correctness != "correct":
                 tk.Label(self, text=correctness).grid(row=fitness_row + i, column=fitness_column, padx=5, pady=5)
@@ -200,7 +226,8 @@ class ActionInterface(Interface):
             for label in self.grid_slaves(evolutionary_row + i, evolutionary_column):
                 label.grid_forget()
             correctness = evolutionary_parameters[i].is_value_valid(self.evolutionary_parameter_values[i].get(),
-                                                                    self.problem_size.get())
+                                                                    self.problem_size.get(),
+                                                                    self.problem_size_end.get())
             # If a constraint is not respected, display it to the user
             if correctness != "correct":
                 tk.Label(self, text=correctness)\
@@ -235,7 +262,7 @@ class DF(ActionInterface):
                  evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
-                         problem_size, problem_size_end, step, iterations,
+                         problem_size, problem_size, step, iterations,
                          fitness_function, fitness_parameter_values,
                          evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss)
 
@@ -280,7 +307,7 @@ class R1(ActionInterface):
                  evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
-                         problem_size, problem_size_end, step, iterations,
+                         problem_size, problem_size, step, iterations,
                          fitness_function, fitness_parameter_values,
                          evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss)
 
@@ -334,7 +361,7 @@ class RN(ActionInterface):
                  evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
-                         problem_size, problem_size_end, step, iterations,
+                         problem_size, problem_size, step, iterations,
                          fitness_function, fitness_parameter_values,
                          evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss)
 
@@ -368,7 +395,7 @@ class RN(ActionInterface):
                 evolutionary_parameter_values.append(evolutionary_parameter_value.get())
             # Adding the number of iterations of each run in an array
             results = run_parallel(iterations, problem_size, self.evolutionary_algorithm, evolutionary_parameter_values,
-                                   self.fitness_function, fitness_parameter_values)
+                                   self.fitness_function, fitness_parameter_values, cores)
             tk.Label(self, text="The minimum number of iterations is: " + str(int(results.min()))) \
                 .grid(row=start_row, column=1, padx=5, pady=5)
             tk.Label(self, text="The maximum number of iterations is: " + str(int(results.max()))) \
@@ -406,42 +433,46 @@ class RNM(ActionInterface):
         row = self.choice_of_evolutionary_parameters(evolutionary_row)
 
         # Create the graphs of the fitness function
-        display_button = ttk.Button(self, text="Run", command=lambda: self.solve_n_m_times(row+1))
+        display_button = ttk.Button(self, text="Run", command=lambda: self.solve_n_m_times(row+1, 2, 3, 3, 2,
+                                                                                           fitness_row, 3,
+                                                                                           evolutionary_row, 3))
         display_button.grid(row=row, column=2, padx=5, pady=5)
 
-    # TODO - Add constraints for checking the sizes
-    #  Step has to be a multiple of smth when size has to be a multiple
     # Function solving the problem for a range different problem size and returning a graph of the means
-    def solve_n_m_times(self, start_row):
-        problem_size = self.problem_size.get()
-        problem_size_end = self.problem_size_end.get()
-        step = self.step.get()
-        iterations = self.iterations.get()
-        fitness_parameter_values = []
-        for fitness_parameter_value in self.fitness_parameter_values:
-            fitness_parameter_values.append(fitness_parameter_value.get())
-        evolutionary_parameter_values = []
-        for evolutionary_parameter_value in self.evolutionary_parameter_values:
-            evolutionary_parameter_values.append(evolutionary_parameter_value.get())
-        x = []
-        y = []
-        y_box_plot = []
-        # For every length in the range, adding the mean to the plot and the iteration values to create a boxplot
-        for i in range(problem_size, problem_size_end+1, step):
-            print("Problem size: " + str(i))
-            results = run_parallel(iterations, i, self.evolutionary_algorithm, evolutionary_parameter_values,
-                                   self.fitness_function, fitness_parameter_values)
-            x.append(i)
-            y.append(round(results.mean(), 0))
-            y_box_plot.append(results)
-        print("Problem size: Done")
+    def solve_n_m_times(self, start_row, size_row, size_column, step_row, step_column, fitness_row, fitness_column,
+                        evolutionary_row, evolutionary_column):
+        if self.check_range(size_row, size_column, step_row, step_column) and \
+                self.check_fitness_parameters(fitness_row, fitness_column) and \
+                self.check_evolutionary_parameters(evolutionary_row, evolutionary_column):
+            problem_size = self.problem_size.get()
+            problem_size_end = self.problem_size_end.get()
+            step = self.step.get()
+            iterations = self.iterations.get()
+            fitness_parameter_values = []
+            for fitness_parameter_value in self.fitness_parameter_values:
+                fitness_parameter_values.append(fitness_parameter_value.get())
+            evolutionary_parameter_values = []
+            for evolutionary_parameter_value in self.evolutionary_parameter_values:
+                evolutionary_parameter_values.append(evolutionary_parameter_value.get())
+            x = []
+            y = []
+            y_box_plot = []
+            # For every length in the range, adding the mean to the plot and the iteration values to create a boxplot
+            for i in range(problem_size, problem_size_end+1, step):
+                print("Problem size: " + str(i))
+                results = run_parallel(iterations, i, self.evolutionary_algorithm, evolutionary_parameter_values,
+                                       self.fitness_function, fitness_parameter_values, cores)
+                x.append(i)
+                y.append(round(results.mean(), 0))
+                y_box_plot.append(results)
+            print("Problem size: Done")
 
-        build_plot(self, [("Problem size", self.fitness_function_name.get(), self.evolutionary_algorithm_name.get())],
-                   [x], [y], start_row, 0,
-                   "Plot of the mean of the runs as a function of the problem size", "Problem size", "Mean of the runs")
-        build_box_plot(self, self.evolutionary_algorithm.name, x, y_box_plot, start_row, 2,
-                       "Box plot of the number of iterations as a function of the problem size",
-                       "Problem_size", "Iterations")
+            build_plot(self, [("Problem size", self.fitness_function_name.get(), self.evolutionary_algorithm_name.get())],
+                       [x], [y], start_row, 0, "Plot of the mean of the runs as a function of the problem size",
+                       "Problem size", "Mean of the runs")
+            build_box_plot(self, self.evolutionary_algorithm.name, x, y_box_plot, start_row, 2,
+                           "Box plot of the number of iterations as a function of the problem size",
+                           "Problem_size", "Iterations")
 
 
 # Interface for running evolutionary algorithms n times on a fitness function for a range of length and comparing them
@@ -465,68 +496,78 @@ class RKNM(ActionInterface):
         row = self.choice_of_evolutionary_parameters(evolutionary_row)
 
         # Create the graph of the fitness function
-        display_button = ttk.Button(self, text="New run", command=lambda: self.new_run(row+1))
+        display_button = ttk.Button(self, text="New run", command=lambda: self.new_run(row+1, 2, 3, 3, 2,
+                                                                                       fitness_row, 3,
+                                                                                       evolutionary_row, 3))
         display_button.grid(row=row, column=2, padx=5, pady=5)
 
         # If there is already one graph displayed, add a button in order to add a new algorithm to same graph
         if len(self.labels) > 0:
             # Add a new run from the previous graph
             display_button = ttk.Button(self, text="Add run",
-                                        command=lambda: self.solve_k_n_m_times(row+1))
+                                        command=lambda: self.solve_k_n_m_times(row+1, 2, 3, 3, 2,
+                                                                               fitness_row, 3,
+                                                                               evolutionary_row, 3))
             display_button.grid(row=row, column=3, padx=5, pady=5)
 
-    # TODO - Add constraints for checking the sizes
     # Function running the EA for a range of problem length and getting statistical results
     # Add the plot to the previous plots if there was already
-    def solve_k_n_m_times(self, start_row):
-        problem_size = self.problem_size.get()
-        problem_size_end = self.problem_size_end.get()
-        step = self.step.get()
+    def solve_k_n_m_times(self, start_row, size_row, size_column, step_row, step_column, fitness_row, fitness_column,
+                          evolutionary_row, evolutionary_column):
+        if self.check_range(size_row, size_column, step_row, step_column) and \
+                self.check_fitness_parameters(fitness_row, fitness_column) and \
+                self.check_evolutionary_parameters(evolutionary_row, evolutionary_column):
+            problem_size = self.problem_size.get()
+            problem_size_end = self.problem_size_end.get()
+            step = self.step.get()
 
-        iterations = self.iterations.get()
-        fitness_parameter_values = []
-        for fitness_parameter_value in self.fitness_parameter_values:
-            fitness_parameter_values.append(fitness_parameter_value.get())
-        evolutionary_parameter_values = []
-        for evolutionary_parameter_value in self.evolutionary_parameter_values:
-            evolutionary_parameter_values.append(evolutionary_parameter_value.get())
-        x = []
-        y = []
-        ys = []
-        # For every length in the range it adds the mean to the plot
-        for i in range(problem_size, problem_size_end + 1, step):
-            print("Problem size: " + str(i))
-            results = run_parallel(iterations, i, self.evolutionary_algorithm, evolutionary_parameter_values,
-                                   self.fitness_function, fitness_parameter_values)
-            x.append(i)
-            y.append(round(results.mean(), 0))
-            ys.append(results)
-        print("Problem size: Done")
-        # Add the plot to the already computed ones
-        self.labels.append(("Iterations", self.fitness_function_name.get(), self.evolutionary_algorithm_name.get()))
-        self.xs.append(x)
-        self.ys.append(y)
-        self.yss.append(ys)
+            iterations = self.iterations.get()
+            fitness_parameter_values = []
+            for fitness_parameter_value in self.fitness_parameter_values:
+                fitness_parameter_values.append(fitness_parameter_value.get())
+            evolutionary_parameter_values = []
+            for evolutionary_parameter_value in self.evolutionary_parameter_values:
+                evolutionary_parameter_values.append(evolutionary_parameter_value.get())
+            x = []
+            y = []
+            ys = []
+            # For every length in the range it adds the mean to the plot
+            for i in range(problem_size, problem_size_end + 1, step):
+                print("Problem size: " + str(i))
+                results = run_parallel(iterations, i, self.evolutionary_algorithm, evolutionary_parameter_values,
+                                       self.fitness_function, fitness_parameter_values, cores)
+                x.append(i)
+                y.append(round(results.mean(), 0))
+                ys.append(results)
+            print("Problem size: Done")
+            # Add the plot to the already computed ones
+            self.labels.append(("Iterations", self.fitness_function_name.get(), self.evolutionary_algorithm_name.get()))
+            self.xs.append(x)
+            self.ys.append(y)
+            self.yss.append(ys)
 
-        sheet_names = []
-        for i in range(len(self.labels)):
-            sheet_names.append(self.labels[i][2])
+            sheet_names = []
+            for i in range(len(self.labels)):
+                sheet_names.append(self.labels[i][2])
 
-        extract_full_data_button(self, sheet_names, self.xs, self.yss, start_row-1, 1)
+            extract_full_data_button(self, sheet_names, self.xs, self.yss, start_row-1, 1)
 
-        build_plot(self, self.labels , self.xs, self.ys, start_row, 2,
-                   "Comparison of different algorithms on " + self.fitness_function_name.get(),
-                   "Problem size", "Mean of the runs")
+            build_plot(self, self.labels, self.xs, self.ys, start_row, 2,
+                       "Comparison of different algorithms on " + self.fitness_function_name.get(),
+                       "Problem size", "Mean of the runs")
 
-        # Add a button for adding a new run from the previous graph
-        display_button = ttk.Button(self, text="Add run",
-                                    command=lambda: self.solve_k_n_m_times(start_row))
-        display_button.grid(row=start_row-1, column=3, padx=5, pady=5)
+            # Add a button for adding a new run from the previous graph
+            display_button = ttk.Button(self, text="Add run",
+                                        command=lambda: self.solve_k_n_m_times(start_row, size_row, size_column, step_row, step_column, fitness_row, fitness_column,
+                                                                               evolutionary_row, evolutionary_column))
+            display_button.grid(row=start_row-1, column=3, padx=5, pady=5)
 
     # Erase the previous plot to start a new one
-    def new_run(self, start_row):
+    def new_run(self, start_row, size_row, size_column, step_row, step_column, fitness_row, fitness_column,
+                evolutionary_row, evolutionary_column):
         self.labels = []
         self.xs = []
         self.ys = []
         self.yss = []
-        self.solve_k_n_m_times(start_row)
+        self.solve_k_n_m_times(start_row, size_row, size_column, step_row, step_column, fitness_row, fitness_column,
+                               evolutionary_row, evolutionary_column)

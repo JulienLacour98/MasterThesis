@@ -72,7 +72,7 @@ def main():
             display_interface()
         # Run the first analysis
         elif sys.argv[1] == "1":
-            script_1(int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]))
+            script_1(int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]), int(sys.argv[6]))
 
 
 main()
