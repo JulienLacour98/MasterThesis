@@ -27,7 +27,13 @@
 
 ### — Add modules necessary to execute the script
 ##module load <list of the modules the program needs>
-module load python3/3.10.2
+module load gcc/10.3.0-binutils-2.36.1
+module load python3/3.9.6
+module load openblas/0.3.17
+module load numpy/1.21.1-python-3.9.6-openblas-0.3.17
+module load  matplotlib/3.4.2-numpy-1.21.1-python-3.9.6
+module load pandas/1.3.1-python-3.9.6
+
 
 # here follow the commands you want to execute
-python3 ../Main.py 1 100 1000 100 100 10
+python3 Main.py 1 100 1000 100 1000 10 False

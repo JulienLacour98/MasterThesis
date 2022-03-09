@@ -3,7 +3,7 @@ from Interface import *
 
 
 # Evaluate all the algorithms on OneMax
-def script_1(start_length, end_length, length_step, runs, nb_cores):
+def script_1(start_length, end_length, length_step, runs, nb_cores, hpc):
     # Create array with all the length analysed
     lengths = []
     for iteration in range(start_length, end_length + 1, length_step):
@@ -13,11 +13,11 @@ def script_1(start_length, end_length, length_step, runs, nb_cores):
     means = []
     # For each algorithm and each length, run the algorithm "runs" time
     for i in range(len(evolutionary_algorithms)):
-        print(evolutionary_algorithms[i].name)
         results.append([])
         means.append([])
+        header = ""
         for j in range(len(lengths)):
-            print(lengths[j])
+            header += evolutionary_algorithms[i].name + " " + str(lengths[j]) + ", "
             # Append the "runs" runtimes on OneMax
             results[i].append(run_parallel(runs, lengths[j],
                                            evolutionary_algorithms[i],
@@ -27,26 +27,34 @@ def script_1(start_length, end_length, length_step, runs, nb_cores):
                                            nb_cores))
             means[i].append(round(results[i][j].mean(), 2))
 
-    # Create a Pandas Excel writer using XlsxWriter as the engine.
-    if not os.path.exists("export"):
-        os.mkdir("export")
-    if not os.path.exists("export/script_1"):
-        os.mkdir("export/script_1")
+        print(header)
+        for k in range(runs):
+            line = ""
+            for j in range(len(lengths)):
+                line += str(results[i][j][k]) + ", "
+            print(line)
 
-    writer = pd.ExcelWriter(f"export/script_1/"
-                            f"{start_length}_{end_length}_{length_step}_{runs}.xlsx", engine="xlsxwriter")
-    # Write all the results in an Excel file
-    for i in range(len(results)):
-        df = pd.DataFrame()
-        for j in range(len(lengths)):
-            df[str(lengths[j])] = results[i][j]
-        df.to_excel(writer, sheet_name=evolutionary_algorithms[i].name, index=True)
+    if hpc == "True":
+        # Create a Pandas Excel writer using XlsxWriter as the engine.
+        if not os.path.exists("export"):
+            os.mkdir("export")
+        if not os.path.exists("export/script_1"):
+            os.mkdir("export/script_1")
 
-    # Add a sheet with the means
-    df = pd.DataFrame({"Problem size": lengths})
-    for i in range(len(evolutionary_algorithms)):
-        df[evolutionary_algorithms[i].name] = means[i]
-    df.to_excel(writer, sheet_name="Means", index=False)
+        writer = pd.ExcelWriter(f"export/script_1/"
+                                f"{start_length}_{end_length}_{length_step}_{runs}.xlsx", engine="xlsxwriter")
+        # Write all the results in an Excel file
+        for i in range(len(results)):
+            df = pd.DataFrame()
+            for j in range(len(lengths)):
+                df[str(lengths[j])] = results[i][j]
+            df.to_excel(writer, sheet_name=evolutionary_algorithms[i].name, index=True)
 
-    # Close the Pandas Excel writer and output the Excel file.
-    writer.save()
+        # Add a sheet with the means
+        df = pd.DataFrame({"Problem size": lengths})
+        for i in range(len(evolutionary_algorithms)):
+            df[evolutionary_algorithms[i].name] = means[i]
+        df.to_excel(writer, sheet_name="Means", index=False)
+
+        # Close the Pandas Excel writer and output the Excel file.
+        writer.save()

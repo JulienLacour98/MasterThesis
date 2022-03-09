@@ -20,4 +20,10 @@ The following libraries need to be imported:
 - In order to run the framework use the following command in the terminal: "python3 Main.py [script] [params]" with:
   - [script] in [0, 1]: 
     - 0 to display the interface. [param] is then empty.
-    - 1 to start the first script to run all the functions on OneMax. [params] is then [start_length] [end_length] [length_step] [runs]
+    - 1 to start the first script to run all the functions on OneMax. [params] is then [start_length] [end_length] [length_step] [runs] [cores] [hpc] with:
+      - [start_length]: Starting problem size (integer)
+      - [end_length]: Ending problem size (integer)
+      - [length_step]: Gap between each problem size that is analysed (integer)
+      - [runs]: Number of iterations per problem size (integer)
+      - [cores]: Number of cores used for running the algorithm (integer)
+      - [generate_excel]: 1 if you want an Excel to be generated. Not possible on the HPC of DTU. (integer)
