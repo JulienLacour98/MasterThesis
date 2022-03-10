@@ -94,7 +94,8 @@ def script_2(evolutionary, fitness,
 def script_2_1(index, start_length, end_length, length_step, runs, nb_cores, hpc):
     algorithms = [(OnePlusOne, [4]),
                   (SDOnePlusOne, ["size^3"]),
-                  (SAOneLambda, [10, 2, 2])]
+                  (SAOneLambda, [10, 2, 2]),
+                  (SDRLSR, ["size^3"])]
 
     for i in range(len(algorithms[index][1])):
         algorithms[index][0].parameters[i].default_value = algorithms[index][1][i]
