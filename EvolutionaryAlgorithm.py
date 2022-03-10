@@ -565,7 +565,7 @@ SDRLSR = EvolutionaryAlgorithm("SD-RLS_r", [paramR], sd_rls_r)
 paramR = Parameter("R", "integer", "size^3", "size^3", float('inf'), INT)
 SDRLSM = EvolutionaryAlgorithm("SD-RLS_m", [paramR], sd_rls_m)
 
-# Creation of the (1, lambda) EA
+# Creation of the self-adjusting (1, lambda) EA
 # TODO - Paper arguing from lambda = log(n) but reveals to be too long -> so changed to n
 Lambda = Parameter("Lambda", "integer", "size", "log(size)", float('inf'), INT)
 paramF = Parameter("F", "integer", 2, 2, float('inf'), INT)

@@ -17,7 +17,7 @@ def script_1(start_length, end_length, length_step, runs, nb_cores, hpc):
         means.append([])
         header = ""
         for j in range(len(lengths)):
-            header += evolutionary_algorithms[i].name + " " + str(lengths[j]) + ", "
+            header += evolutionary_algorithms[i].name + " " + str(lengths[j]) + ";"
             # Append the "runs" runtimes on OneMax
             results[i].append(run_parallel(runs, lengths[j],
                                            evolutionary_algorithms[i],
@@ -31,7 +31,7 @@ def script_1(start_length, end_length, length_step, runs, nb_cores, hpc):
         for k in range(runs):
             line = ""
             for j in range(len(lengths)):
-                line += str(results[i][j][k]) + ", "
+                line += str(results[i][j][k]) + ";"
             print(line)
 
     if hpc == "True":
@@ -58,3 +58,50 @@ def script_1(start_length, end_length, length_step, runs, nb_cores, hpc):
 
         # Close the Pandas Excel writer and output the Excel file.
         writer.save()
+
+
+# Evaluate one algorithm on a fitness function
+def script_2(evolutionary, fitness,
+             start_length, end_length, length_step, runs, nb_cores, hpc):
+    print(evolutionary.name)
+    print(fitness.name)
+    # Create array with all the length analysed
+    lengths = []
+    for iteration in range(start_length, end_length + 1, length_step):
+        lengths.append(iteration)
+
+    results = []
+    # For each algorithm and each length, run the algorithm "runs" time
+    header = ""
+    for j in range(len(lengths)):
+        header += evolutionary.name + " " + str(lengths[j]) + ";"
+        # Append the "runs" runtimes on OneMax
+        results.append(run_parallel(runs, lengths[j],
+                                    evolutionary,
+                                    default_parameters(evolutionary, lengths[j]),
+                                    fitness,
+                                    default_parameters(fitness, lengths[j]),
+                                    nb_cores))
+
+    print(header)
+    for k in range(runs):
+        line = ""
+        for j in range(len(lengths)):
+            line += str(results[j][k]) + ";"
+        print(line)
+
+
+def script_2_1(index, start_length, end_length, length_step, runs, nb_cores, hpc):
+    algorithms = [(OnePlusOne, [4]),
+                  (SDOnePlusOne, ["size^3"]),
+                  (SAOneLambda, [10, 2, 2])]
+
+    for i in range(len(algorithms[index][1])):
+        algorithms[index][0].parameters[i].default_value = algorithms[index][1][i]
+
+    script_2(algorithms[index][0], JumpM,
+             start_length, end_length, length_step, runs, nb_cores, hpc)
+
+
+
+
