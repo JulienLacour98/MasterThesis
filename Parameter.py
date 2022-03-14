@@ -45,6 +45,8 @@ def update_parameter(value, size):
         return int(size/2)
     elif value == "size/4":
         return int(size/4)
+    elif value == "sqrt*log":
+        return math.ceil(math.sqrt(size) * math.log(size))
     else:
         return value
             

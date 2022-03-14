@@ -8,10 +8,10 @@
 #BSUB -n 20
 ### -- specify that the cores must be on the same host --
 #BSUB -R "span[hosts=1]"
-### -- specify that we need 2GB of memory per core/slot --
-#BSUB -R "rusage[mem=2GB]"
-### -- specify that we want the job to get killed if it exceeds 3 GB per core/slot --
-#BSUB -M 3GB
+### -- specify that we need 10GB of memory per core/slot --
+#BSUB -R "rusage[mem=10GB]"
+### -- specify that we want the job to get killed if it exceeds 10 GB per core/slot --
+#BSUB -M 10GB
 ### -- set wall time limit: hh:mm --
 #BSUB -W 48:00
 ### -- set the email address --
