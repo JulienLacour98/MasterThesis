@@ -11,7 +11,7 @@
 ### -- specify that we need 8GB of memory per core/slot --
 #BSUB -R "rusage[mem=8GB]"
 ### -- specify that we want the job to get killed if it exceeds 10 GB per core/slot --
-#BSUB -M 10B
+#BSUB -M 10GB
 ### -- set wall time limit: hh:mm --
 #BSUB -W 72:00
 ### -- set the email address --
@@ -31,7 +31,7 @@ module load gcc/10.3.0-binutils-2.36.1
 module load python3/3.9.6
 module load openblas/0.3.17
 module load numpy/1.21.1-python-3.9.6-openblas-0.3.17
-module load  matplotlib/3.4.2-numpy-1.21.1-python-3.9.6
+module load matplotlib/3.4.2-numpy-1.21.1-python-3.9.6
 module load pandas/1.3.1-python-3.9.6
 
 
