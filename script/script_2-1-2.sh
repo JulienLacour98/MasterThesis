@@ -3,7 +3,7 @@
 ### -- specify queue --
 #BSUB -q hpc
 ### -- set the job Name --
-#BSUB -J Script_2-1
+#BSUB -J Script_2-1-2
 ### -- ask for number of cores (default: 1) --
 #BSUB -n 20
 ### -- specify that the cores must be on the same host --

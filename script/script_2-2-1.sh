@@ -3,7 +3,7 @@
 ### -- specify queue --
 #BSUB -q hpc
 ### -- set the job Name --
-#BSUB -J Script_2-2
+#BSUB -J Script_2-2-1
 ### -- ask for number of cores (default: 1) --
 #BSUB -n 20
 ### -- specify that the cores must be on the same host --
@@ -36,4 +36,4 @@ module load pandas/1.3.1-python-3.9.6
 
 
 # here follow the commands you want to execute
-python3 Main.py 2 2 0 0 40 160 20 10 20 False
+python3 Main.py 2 2 0 0 40 160 20 100 20 False

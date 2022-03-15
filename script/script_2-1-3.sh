@@ -3,17 +3,17 @@
 ### -- specify queue --
 #BSUB -q hpc
 ### -- set the job Name --
-#BSUB -J Script_2-1
+#BSUB -J Script_2-1-3
 ### -- ask for number of cores (default: 1) --
 #BSUB -n 20
 ### -- specify that the cores must be on the same host --
 #BSUB -R "span[hosts=1]"
-### -- specify that we need 10GB of memory per core/slot --
-#BSUB -R "rusage[mem=10GB]"
+### -- specify that we need 8GB of memory per core/slot --
+#BSUB -R "rusage[mem=8GB]"
 ### -- specify that we want the job to get killed if it exceeds 10 GB per core/slot --
 #BSUB -M 10GB
 ### -- set wall time limit: hh:mm --
-#BSUB -W 48:00
+#BSUB -W 72:00
 ### -- set the email address --
 #BSUB -u s202566@student.dtu.dk
 ### -- send notification at start --
