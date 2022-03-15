@@ -342,7 +342,7 @@ class R1(ActionInterface):
             bit_string, iterations, timer, x, y = self.evolutionary_algorithm.solve(evolutionary_parameter_values,
                                                                                     problem_size,
                                                                                     self.fitness_function,
-                                                                                    fitness_parameter_values)
+                                                                                    fitness_parameter_values, True)
             tk.Label(self, text="The solution was found in " + str(round(timer, 2)) + " seconds")\
                 .grid(row=start_row, column=1, padx=5, pady=5)
             tk.Label(self, text="The solution was found in " + str(iterations) + " iterations")\

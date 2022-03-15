@@ -193,7 +193,7 @@ def run_parallel(iterations, size, evolutionary_algorithm, evolutionary_paramete
 def solve_partial(size, evolutionary_algorithm, evolutionary_parameter_values,
                   fitness_function, fitness_parameter_values, i):
     _, iterations, _, _, _ = evolutionary_algorithm.solve(evolutionary_parameter_values,
-                                                          size, fitness_function, fitness_parameter_values)
+                                                          size, fitness_function, fitness_parameter_values, False)
     return iterations
 
 

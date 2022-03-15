@@ -95,13 +95,27 @@ def script_2_1(index, start_length, end_length, length_step, runs, nb_cores, hpc
     algorithms = [(OnePlusOne, [4]),
                   (SDOnePlusOne, ["size^3"]),
                   (SAOneLambda, [10, 2, 2]),
-                  (SDRLSR, ["size^3"]),
-                  (cGA, ["sqrt*log"])]
+                  (SDRLSR, ["size^3"])]
 
     for i in range(len(algorithms[index][1])):
         algorithms[index][0].parameters[i].default_value = algorithms[index][1][i]
 
     script_2(algorithms[index][0], JumpM,
+             start_length, end_length, length_step, runs, nb_cores, hpc)
+
+
+def script_2_2(index_algorithm, index_fitness, start_length, end_length, length_step, runs, nb_cores, hpc):
+    algorithms = [(cGA, ["sqrt*log"])]
+    functions = [(JumpOffsetM, [4]),
+                 (JumpOffsetSpikeM, [4])]
+
+    for i in range(len(algorithms[index_algorithm][1])):
+        algorithms[index_algorithm][0].parameters[i].default_value = algorithms[index_algorithm][1][i]
+
+    for i in range(len(functions[index_fitness][1])):
+        functions[index_fitness][0].parameters[i].default_value = functions[index_fitness][1][i]
+
+    script_2(algorithms[index_algorithm][0], functions[index_fitness][0],
              start_length, end_length, length_step, runs, nb_cores, hpc)
 
 

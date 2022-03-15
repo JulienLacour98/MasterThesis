@@ -18,18 +18,19 @@ class EvolutionaryAlgorithm:
         evolutionary_algorithm_names.append(self.name)
 
     # Solve a fitness function with the algorithm and returns the solution, running times and different iterations
-    def solve(self, evolutionary_parameters, size, fitness_function, fitness_parameters):
+    def solve(self, evolutionary_parameters, size, fitness_function, fitness_parameters, get_path):
         t1 = time.time()
         bit_string, iterations, x, y = self.algorithm(evolutionary_parameters,
                                                       size,
                                                       fitness_function,
-                                                      fitness_parameters)
+                                                      fitness_parameters,
+                                                      get_path)
         t2 = time.time()
         return bit_string.string, iterations, t2 - t1, x, y
 
 
 # Algorithm for the (1+1) EA
-def one_plus_one(parameters, n, fitness_function, fitness_parameters):
+def one_plus_one(parameters, n, fitness_function, fitness_parameters, get_path):
     r = parameters[0]
     # Creation of a random bit string of length n
     bit_string = BitString(n)
@@ -52,13 +53,14 @@ def one_plus_one(parameters, n, fitness_function, fitness_parameters):
             bit_string = new_bit_string
             fitness_value = new_fitness_value
             found_maximum = (fitness_value == fitness_maximum)
-            x.append(iterations)
-            y.append(fitness_value)
+            if get_path:
+                x.append(iterations)
+                y.append(fitness_value)
     return bit_string, iterations, x, y
 
 
 # Algorithm for the SD-(1+1) EA
-def sd_one_plus_one(parameters, n, fitness_function, fitness_parameters):
+def sd_one_plus_one(parameters, n, fitness_function, fitness_parameters, get_path):
     R = parameters[0]
     # Creation of a random bit string of length "size"
     bit_string = BitString(n)
@@ -86,8 +88,9 @@ def sd_one_plus_one(parameters, n, fitness_function, fitness_parameters):
             bit_string = new_bit_string
             fitness_value = new_fitness_value
             found_maximum = (fitness_value == fitness_maximum)
-            x.append(iterations)
-            y.append(fitness_value)
+            if get_path:
+                x.append(iterations)
+                y.append(fitness_value)
             # The strength is reset to 1 and the number of iterations at this strength to 0
             r = 1
             u = 0
@@ -96,8 +99,9 @@ def sd_one_plus_one(parameters, n, fitness_function, fitness_parameters):
             bit_string = new_bit_string
             fitness_value = new_fitness_value
             found_maximum = (fitness_value == fitness_maximum)
-            x.append(iterations)
-            y.append(fitness_value)
+            if get_path:
+                x.append(iterations)
+                y.append(fitness_value)
         # After too many iterations, the strength is increased and the number of iterations reset to 0
         if u > np.power(n / r, r) * np.power(n / (n - r), n - r) * math.log(math.exp(1) * n * R):
             # TODO - Analyse the impact of rounding up
@@ -110,7 +114,7 @@ def sd_one_plus_one(parameters, n, fitness_function, fitness_parameters):
 
 
 # Algorithm for the SASD-(1+1) EA
-def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters):
+def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters, get_path):
     lbd = parameters[0]
     r_init = parameters[1]
     R = parameters[2]
@@ -154,8 +158,9 @@ def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters):
                 bit_string = new_bit_string
                 fitness_value = new_fitness_value
                 found_maximum = (fitness_value == fitness_maximum)
-                x.append(iterations)
-                y.append(fitness_value)
+                if get_path:
+                    x.append(iterations)
+                    y.append(fitness_value)
                 # Reinitialise parameters
                 new_r = r_init
                 g = False
@@ -200,8 +205,9 @@ def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters):
                 bit_string = new_bit_string
                 fitness_value = new_fitness_value
                 found_maximum = (fitness_value == fitness_maximum)
-                x.append(iterations)
-                y.append(fitness_value)
+                if get_path:
+                    x.append(iterations)
+                    y.append(fitness_value)
             # Updating r
             if random.random() < 1/2:
                 r = used_r
@@ -222,7 +228,7 @@ def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters):
 
 
 # Algorithm for the SD-RLS_r algorithm
-def sd_rls_r(parameters, n, fitness_function, fitness_parameters):
+def sd_rls_r(parameters, n, fitness_function, fitness_parameters, get_path):
     R = parameters[0]
     # Creation of a random bit-string of size n
     bit_string = BitString(n)
@@ -245,8 +251,9 @@ def sd_rls_r(parameters, n, fitness_function, fitness_parameters):
             bit_string = new_bit_string
             fitness_value = new_fitness_value
             found_maximum = (fitness_value == fitness_maximum)
-            x.append(iterations)
-            y.append(fitness_value)
+            if get_path:
+                x.append(iterations)
+                y.append(fitness_value)
             # Resetting parameters
             r = 1
             s = 1
@@ -256,8 +263,9 @@ def sd_rls_r(parameters, n, fitness_function, fitness_parameters):
             bit_string = new_bit_string
             fitness_value = new_fitness_value
             found_maximum = (fitness_value == fitness_maximum)
-            x.append(iterations)
-            y.append(fitness_value)
+            if get_path:
+                x.append(iterations)
+                y.append(fitness_value)
         # If too many iterations, update parameters
         if u > math.comb(n, s) * math.log(R):
             if s == 1:
@@ -274,7 +282,7 @@ def sd_rls_r(parameters, n, fitness_function, fitness_parameters):
 
 
 # Algorithm for the SD-RLS_m algorithm
-def sd_rls_m(parameters, n, fitness_function, fitness_parameters):
+def sd_rls_m(parameters, n, fitness_function, fitness_parameters, get_path):
     R = parameters[0]
     # Creation of a random bit-string of size n
     bit_string = BitString(n)
@@ -298,8 +306,9 @@ def sd_rls_m(parameters, n, fitness_function, fitness_parameters):
             bit_string = new_bit_string
             fitness_value = new_fitness_value
             found_maximum = (fitness_value == fitness_maximum)
-            x.append(iterations)
-            y.append(fitness_value)
+            if get_path:
+                x.append(iterations)
+                y.append(fitness_value)
             # Memory of the strength of the update
             r = s
             s = 1
@@ -313,8 +322,9 @@ def sd_rls_m(parameters, n, fitness_function, fitness_parameters):
             bit_string = new_bit_string
             fitness_value = new_fitness_value
             found_maximum = (fitness_value == fitness_maximum)
-            x.append(iterations)
-            y.append(fitness_value)
+            if get_path:
+                x.append(iterations)
+                y.append(fitness_value)
         # If too many iterations with a strength
         if u > min(B, math.comb(n, s) * math.log(R)):
             if s == r:
@@ -332,7 +342,7 @@ def sd_rls_m(parameters, n, fitness_function, fitness_parameters):
 
 
 # Algorithm for the SA-(1, lambda) EA
-def sa_one_lambda(parameters, n, fitness_function, fitness_parameters):
+def sa_one_lambda(parameters, n, fitness_function, fitness_parameters, get_path):
     lbd = parameters[0]
     F = parameters[1]
     r_init = parameters[2]
@@ -370,15 +380,16 @@ def sa_one_lambda(parameters, n, fitness_function, fitness_parameters):
         fitness_value = new_fitness_values[index_max]
         found_maximum = (fitness_value == fitness_maximum)
         new_r = rs[index_max]
-        x.append(iterations)
-        y.append(fitness_value)
+        if get_path:
+            x.append(iterations)
+            y.append(fitness_value)
         # Bound the value of r
         r = min(max(F, new_r), n/(2 * F))
     return bit_string, iterations, x, y
 
 
 # Algorithm for the (mu+1) EA with deterministic crowding
-def mu_plus_one_deterministic(parameters, n, fitness_function, fitness_parameters):
+def mu_plus_one_deterministic(parameters, n, fitness_function, fitness_parameters, get_path):
     mu = parameters[0]
     population = []
     fitness_values = []
@@ -412,14 +423,15 @@ def mu_plus_one_deterministic(parameters, n, fitness_function, fitness_parameter
                 bit_string = new_bit_string
                 fitness_value = new_fitness_value
                 found_maximum = (fitness_value == fitness_maximum)
-                x.append(iterations)
-                y.append(fitness_value)
+                if get_path:
+                    x.append(iterations)
+                    y.append(fitness_value)
     return bit_string, iterations, x, y
 
 
 # Algorithm for the (mu + 1) EA
 # The parameter "operator" is used to pick a parent selection operator ("Uniform" or "Inverse-K")
-def mu_plus_one(operator, parameters, n, fitness_function, fitness_parameters):
+def mu_plus_one(operator, parameters, n, fitness_function, fitness_parameters, get_path):
     mu = parameters[0]
     if operator == "Inverse-K":
         K = parameters[1]
@@ -479,13 +491,14 @@ def mu_plus_one(operator, parameters, n, fitness_function, fitness_parameters):
                 bit_string = new_bit_string
                 fitness_value = new_fitness_value
                 found_maximum = (fitness_value == fitness_maximum)
-                x.append(iterations)
-                y.append(fitness_value)
+                if get_path:
+                    x.append(iterations)
+                    y.append(fitness_value)
     return bit_string, iterations, x, y
 
 
 # Algorithm for the compact Genetic Algorithm
-def compact_genetic_algorithm(parameters, n, fitness_function, fitness_parameters):
+def compact_genetic_algorithm(parameters, n, fitness_function, fitness_parameters, get_path):
     K = parameters[0]
     # Initialise the probabilities of each bit to 1/2
     ps = np.full(n, 1/2)
@@ -518,8 +531,9 @@ def compact_genetic_algorithm(parameters, n, fitness_function, fitness_parameter
         if x_fitness < y_fitness:
             x, y = y, x
             x_fitness, y_fitness = y_fitness, x_fitness
-        xs.append(iterations)
-        ys.append(x_fitness)
+        if get_path:
+            xs.append(iterations)
+            ys.append(x_fitness)
         found_maximum = (x_fitness == fitness_maximum)
         # Weight probabilities depending on the results
         for i in range(n):

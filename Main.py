@@ -82,6 +82,9 @@ def main():
             if sys.argv[2] == "1":
                 script_2_1(int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]),
                            int(sys.argv[6]), int(sys.argv[7]), int(sys.argv[8]), sys.argv[9])
+            elif sys.argv[2] == "2":
+                script_2_2(int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]), int(sys.argv[6]),
+                           int(sys.argv[7]), int(sys.argv[8]), int(sys.argv[9]), sys.argv[10])
 
 
 main()
