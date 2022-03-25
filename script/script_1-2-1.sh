@@ -3,17 +3,17 @@
 ### -- specify queue --
 #BSUB -q hpc
 ### -- set the job Name --
-#BSUB -J Script_2-1-3
+#BSUB -J Script_1-2-1
 ### -- ask for number of cores (default: 1) --
 #BSUB -n 10
 ### -- specify that the cores must be on the same host --
 #BSUB -R "span[hosts=1]"
-### -- specify that we need 8GB of memory per core/slot --
-#BSUB -R "rusage[mem=8GB]"
-### -- specify that we want the job to get killed if it exceeds 10 GB per core/slot --
-#BSUB -M 10GB
+### -- specify that we need 2GB of memory per core/slot --
+#BSUB -R "rusage[mem=2GB]"
+### -- specify that we want the job to get killed if it exceeds 3 GB per core/slot --
+#BSUB -M 3GB
 ### -- set wall time limit: hh:mm --
-#BSUB -W 72:00
+#BSUB -W 24:00
 ### -- set the email address --
 #BSUB -u s202566@student.dtu.dk
 ### -- send notification at start --
@@ -22,8 +22,8 @@
 #BSUB -N
 ### -- Specify the output and error file. %J is the job-id --
 ### -- -o and -e mean append, -oo and -eo mean overwrite --
-#BSUB -o Script_2-1-3_%J.csv
-#BSUB -e Error_2-1-3_%J.err
+#BSUB -o Script_1-2-1_%J.csv
+#BSUB -e Error_1-2-1_%J.err
 
 ### — Add modules necessary to execute the script
 ##module load <list of the modules the program needs>
@@ -36,4 +36,4 @@ module load pandas/1.3.1-python-3.9.6
 
 
 # here follow the commands you want to execute
-python3 Main.py 2 1 2 40 160 20 20 10 False
+python3 Main.py 1 2 40 160 20 100 10 False

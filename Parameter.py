@@ -37,15 +37,19 @@ class Parameter:
 def update_parameter(value, size):
     if value == "size":
         return size
+    elif value == "size^1.2":
+        return math.ceil(np.power(size, 1.2))
     elif value == "size^3":
         return np.power(size, 3)
-    elif value == "log(size)":
+    elif value == "size^3.1":
+        return math.ceil(np.power(size, 3.1))
+    elif value == "ln(size)":
         return int(math.ceil(math.log(size)))
     elif value == "size/2":
         return int(size/2)
     elif value == "size/4":
         return int(size/4)
-    elif value == "sqrt*log":
+    elif value == "sqrt*ln":
         return math.ceil(math.sqrt(size) * math.log(size))
     else:
         return value

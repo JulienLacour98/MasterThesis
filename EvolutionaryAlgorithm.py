@@ -572,36 +572,36 @@ SASDOnePlusLambda = EvolutionaryAlgorithm("SASD-(1+lambda) EA",
                                           sasd_one_plus_lambda)
 
 # Creation of the SD-RLS_r
-paramR = Parameter("R", "integer", "size^3",  "size^3", float('inf'), INT)
+paramR = Parameter("R", "integer", "size^3.1",  "size^3.1", float('inf'), INT)
 SDRLSR = EvolutionaryAlgorithm("SD-RLS_r", [paramR], sd_rls_r)
 
 # Creation of the SD-RLS_m
-paramR = Parameter("R", "integer", "size^3", "size^3", float('inf'), INT)
+paramR = Parameter("R", "integer", "size^3.1", "size^3.1", float('inf'), INT)
 SDRLSM = EvolutionaryAlgorithm("SD-RLS_m", [paramR], sd_rls_m)
 
 # Creation of the self-adjusting (1, lambda) EA
 # TODO - Paper arguing from lambda = log(n) but reveals to be too long -> so changed to n
-Lambda = Parameter("Lambda", "integer", "size", "log(size)", float('inf'), INT)
+Lambda = Parameter("Lambda", "integer", "size", "ln(size)", float('inf'), INT)
 paramF = Parameter("F", "integer", 2, 2, float('inf'), INT)
 # TODO - Constraint initial strength to [F, n/(2F)]
 Initial_Strength = Parameter("Initial strength", "integer", 2, 2, "size", INT)
 SAOneLambda = EvolutionaryAlgorithm("SA-(1, lambda) EA", [Lambda, paramF, Initial_Strength], sa_one_lambda)
 
 # Creation of the (mu + 1) EA with deterministic crowding
-Mu = Parameter("mu", "integer", 10, 1, float('inf'), INT)
+Mu = Parameter("mu", "integer", "size^1.2", 1, float('inf'), INT)
 MuPlusOneDeterministic = EvolutionaryAlgorithm("(mu+1) EA deterministic", [Mu], mu_plus_one_deterministic)
 
 # Creation of the (mu + 1) EA with uniform selection
-Mu = Parameter("mu", "integer", 10, 1, float('inf'), INT)
+Mu = Parameter("mu", "integer", "size^1.2", 1, float('inf'), INT)
 MuPlusOneUniform = EvolutionaryAlgorithm("(mu+1) EA uniform", [Mu], functools.partial(mu_plus_one, "Uniform"))
 
 # Creation of the (mu + 1) EA with Inverse K-tournament selection
-Mu = Parameter("mu", "integer", 10, 1, float('inf'), INT)
-K = Parameter("K", "integer", 10, 1, float('inf'), INT)
+Mu = Parameter("mu", "integer", "size^1.2", 1, float('inf'), INT)
+K = Parameter("K", "integer", 5, 1, float('inf'), INT)
 MuPlusOneInverseK = EvolutionaryAlgorithm("(mu+1) EA inverse K-tournament",
                                           [Mu, K],
                                           functools.partial(mu_plus_one, "Inverse-K"))
 
 # Creation of the compact Genetic Algorithm
-K = Parameter("K", "integer", "sqrt*log", 1, float('inf'), INT)
+K = Parameter("K", "integer", "sqrt*ln", 1, float('inf'), INT)
 cGA = EvolutionaryAlgorithm("cGA", [K], compact_genetic_algorithm)

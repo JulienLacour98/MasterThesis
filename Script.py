@@ -1,9 +1,10 @@
+import math
 import os.path
 from Interface import *
 
 
 # Evaluate all the algorithms on OneMax
-def script_1(start_length, end_length, length_step, runs, nb_cores, hpc):
+def script_1(start_length, end_length, length_step, runs, nb_cores, excel):
     # Create array with all the length analysed
     lengths = []
     for iteration in range(start_length, end_length + 1, length_step):
@@ -18,6 +19,8 @@ def script_1(start_length, end_length, length_step, runs, nb_cores, hpc):
         header = ""
         for j in range(len(lengths)):
             header += evolutionary_algorithms[i].name + " " + str(lengths[j]) + ";"
+            print("Lengths: " + str(lengths[j]))
+            print("Parameters: " + str(default_parameters(evolutionary_algorithms[i], lengths[j])))
             # Append the "runs" runtimes on OneMax
             results[i].append(run_parallel(runs, lengths[j],
                                            evolutionary_algorithms[i],
@@ -34,7 +37,7 @@ def script_1(start_length, end_length, length_step, runs, nb_cores, hpc):
                 line += str(results[i][j][k]) + ";"
             print(line)
 
-    if hpc == "True":
+    if excel == "True":
         # Create a Pandas Excel writer using XlsxWriter as the engine.
         if not os.path.exists("export"):
             os.mkdir("export")
@@ -60,9 +63,51 @@ def script_1(start_length, end_length, length_step, runs, nb_cores, hpc):
         writer.save()
 
 
+# Evaluate cGA on OneMax with different values for K
+def script_1_2(start_length, end_length, length_step, runs, nb_cores, excel):
+    coefs = [1, 25, 125, 625, 3125, 15625]
+
+    # Create array with all the length analysed
+    lengths = []
+    for iteration in range(start_length, end_length + 1, length_step):
+        lengths.append(iteration)
+
+    parameters = []
+    for i in range(len(coefs)):
+        parameters.append([])
+        for length in lengths:
+            parameters[i].append(math.ceil(coefs[i]*math.sqrt(length) * math.log(length)))
+
+    results = []
+    for i in range(len(coefs)):
+        results.append([])
+        header = ""
+        sub_header = ""
+        print("Coefficient: " + str(coefs[i]))
+        for j in range(len(lengths)):
+            header += evolutionary_algorithms[9].name + " " + str(lengths[j]) + ";"
+            # Append the "runs" runtimes on OneMax
+            update_cga = evolutionary_algorithms[9]
+            sub_header += str(parameters[i][j]) + ";"
+            update_cga.parameters[0].default_value = parameters[i][j]
+            results[i].append(run_parallel(runs, lengths[j],
+                                           update_cga,
+                                           default_parameters(update_cga, lengths[j]),
+                                           OneMax,
+                                           default_parameters(OneMax, lengths[j]),
+                                           nb_cores))
+        print(sub_header)
+        print(header)
+        for k in range(runs):
+            line = ""
+            for j in range(len(lengths)):
+                line += str(results[i][j][k]) + ";"
+            print(line)
+
+
 # Evaluate one algorithm on a fitness function
 def script_2(evolutionary, fitness,
-             start_length, end_length, length_step, runs, nb_cores, hpc):
+             start_length, end_length, length_step, runs, nb_cores, excel):
     print(evolutionary.name)
     print(fitness.name)
     # Create array with all the length analysed
@@ -91,7 +136,7 @@ def script_2(evolutionary, fitness,
         print(line)
 
 
-def script_2_1(index, start_length, end_length, length_step, runs, nb_cores, hpc):
+def script_2_1(index, start_length, end_length, length_step, runs, nb_cores, excel):
     algorithms = [(OnePlusOne, [4]),
                   (SDOnePlusOne, ["size^3"]),
                   (SAOneLambda, [10, 2, 2]),
@@ -101,13 +146,14 @@ def script_2_1(index, start_length, end_length, length_step, runs, nb_cores, hpc
         algorithms[index][0].parameters[i].default_value = algorithms[index][1][i]
 
     script_2(algorithms[index][0], JumpM,
-             start_length, end_length, length_step, runs, nb_cores, hpc)
+             start_length, end_length, length_step, runs, nb_cores, excel)
 
 
-def script_2_2(index_algorithm, index_fitness, start_length, end_length, length_step, runs, nb_cores, hpc):
+def script_2_2(index_algorithm, index_fitness, start_length, end_length, length_step, runs, nb_cores, excel):
     algorithms = [(cGA, ["sqrt*log"])]
     functions = [(JumpOffsetM, [4]),
-                 (JumpOffsetSpikeM, [4])]
+                 (JumpOffsetSpikeM, [4]),
+                 (JumpOffsetSpikeM, [8])]
 
     for i in range(len(algorithms[index_algorithm][1])):
         algorithms[index_algorithm][0].parameters[i].default_value = algorithms[index_algorithm][1][i]
@@ -116,7 +162,7 @@ def script_2_2(index_algorithm, index_fitness, start_length, end_length, length_
         functions[index_fitness][0].parameters[i].default_value = functions[index_fitness][1][i]
 
     script_2(algorithms[index_algorithm][0], functions[index_fitness][0],
-             start_length, end_length, length_step, runs, nb_cores, hpc)
+             start_length, end_length, length_step, runs, nb_cores, excel)
 
 
 

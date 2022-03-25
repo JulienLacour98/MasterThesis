@@ -5,7 +5,7 @@
 ### -- set the job Name --
 #BSUB -J Script_1-1
 ### -- ask for number of cores (default: 1) --
-#BSUB -n 10
+#BSUB -n 20
 ### -- specify that the cores must be on the same host --
 #BSUB -R "span[hosts=1]"
 ### -- specify that we need 2GB of memory per core/slot --
@@ -13,7 +13,7 @@
 ### -- specify that we want the job to get killed if it exceeds 3 GB per core/slot --
 #BSUB -M 3GB
 ### -- set wall time limit: hh:mm --
-#BSUB -W 24:00
+#BSUB -W 48:00
 ### -- set the email address --
 #BSUB -u s202566@student.dtu.dk
 ### -- send notification at start --
@@ -36,4 +36,4 @@ module load pandas/1.3.1-python-3.9.6
 
 
 # here follow the commands you want to execute
-python3 Main.py 1 100 1000 100 1000 10 False
+python3 Main.py 1 1 100 1000 100 1000 20 False
