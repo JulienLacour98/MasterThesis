@@ -22,8 +22,8 @@
 #BSUB -N
 ### -- Specify the output and error file. %J is the job-id --
 ### -- -o and -e mean append, -oo and -eo mean overwrite --
-#BSUB -o Script_1-2-2_%J.csv
-#BSUB -e Error_1-2-2_%J.err
+#BSUB -o Script_1-2-3_%J.csv
+#BSUB -e Error_1-2-3_%J.err
 
 ### — Add modules necessary to execute the script
 ##module load <list of the modules the program needs>
@@ -36,4 +36,4 @@ module load pandas/1.3.1-python-3.9.6
 
 
 # here follow the commands you want to execute
-python3 Main.py 1 2 100 1000 100 10 20 False
+python3 Main.py 1 3 100 1000 100 10 20 False

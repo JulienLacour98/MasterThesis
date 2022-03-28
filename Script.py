@@ -63,7 +63,7 @@ def script_1(start_length, end_length, length_step, runs, nb_cores, excel):
         writer.save()
 
 
-# Evaluate cGA on OneMax with different values for K
+# Evaluate cGA on OneMax with different values for K (coef * sqrt(n) * ln(n))
 def script_1_2(start_length, end_length, length_step, runs, nb_cores, excel):
     coefs = [1, 25, 125, 625, 3125, 15625]
 
@@ -90,6 +90,52 @@ def script_1_2(start_length, end_length, length_step, runs, nb_cores, excel):
             update_cga = evolutionary_algorithms[9]
             sub_header += str(parameters[i][j]) + ";"
             update_cga.parameters[0].default_value = parameters[i][j]
+            print("Lengths: " + str(lengths[j]))
+            print("Parameters: " + str(default_parameters(update_cga, lengths[j])))
+            results[i].append(run_parallel(runs, lengths[j],
+                                           update_cga,
+                                           default_parameters(update_cga, lengths[j]),
+                                           OneMax,
+                                           default_parameters(OneMax, lengths[j]),
+                                           nb_cores))
+        print(sub_header)
+        print(header)
+        for k in range(runs):
+            line = ""
+            for j in range(len(lengths)):
+                line += str(results[i][j][k]) + ";"
+            print(line)
+
+
+# Evaluate cGA on OneMax with different values for K (coef * ln(n))
+def script_1_3(start_length, end_length, length_step, runs, nb_cores, excel):
+    coefs = [1, 25, 125, 625, 3125, 15625]
+
+    # Create array with all the length analysed
+    lengths = []
+    for iteration in range(start_length, end_length + 1, length_step):
+        lengths.append(iteration)
+
+    parameters = []
+    for i in range(len(coefs)):
+        parameters.append([])
+        for length in lengths:
+            parameters[i].append(math.ceil(coefs[i] * math.log(length)))
+
+    results = []
+    for i in range(len(coefs)):
+        results.append([])
+        header = ""
+        sub_header = ""
+        print("Coefficient: " + str(coefs[i]))
+        for j in range(len(lengths)):
+            header += evolutionary_algorithms[9].name + " " + str(lengths[j]) + ";"
+            # Append the "runs" runtimes on OneMax
+            update_cga = evolutionary_algorithms[9]
+            sub_header += str(parameters[i][j]) + ";"
+            update_cga.parameters[0].default_value = parameters[i][j]
+            print("Lengths: " + str(lengths[j]))
+            print("Parameters: " + str(default_parameters(update_cga, lengths[j])))
             results[i].append(run_parallel(runs, lengths[j],
                                            update_cga,
                                            default_parameters(update_cga, lengths[j]),
