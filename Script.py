@@ -42,7 +42,10 @@ def general_run(evolutionary_algorithm,
 
 
 # Evaluate all the algorithms on OneMax
-def script_1(start_length, end_length, length_step, runs, nb_cores):
+def script_1_1(start_length, end_length, length_step, runs, nb_cores):
+    MuPlusOneDeterministic.parameters[0].default_value = 10
+    MuPlusOneInverseK.parameters[0].default_value = 10
+    MuPlusOneUniform.parameters[0].default_value = 10
     for i in range(len(evolutionary_algorithms)):
         general_run(evolutionary_algorithms[i],
                     OneMax,
