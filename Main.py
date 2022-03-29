@@ -72,26 +72,27 @@ def main():
         # Display Interface
         if sys.argv[1] == "0":
             display_interface()
-        # Run the first analysis
+        # Run the first analyses
         elif sys.argv[1] == "1":
+            # Run every algorithm on OneMax
             if sys.argv[2] == "1":
                 script_1(int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]),
-                         int(sys.argv[6]), int(sys.argv[7]), sys.argv[8])
+                         int(sys.argv[6]), int(sys.argv[7]))
             elif sys.argv[2] == "2":
                 script_1_2(int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]),
-                           int(sys.argv[6]), int(sys.argv[7]), sys.argv[8])
+                           int(sys.argv[6]), int(sys.argv[7]))
             elif sys.argv[2] == "3":
                 script_1_3(int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]),
-                           int(sys.argv[6]), int(sys.argv[7]), sys.argv[8])
+                           int(sys.argv[6]), int(sys.argv[7]))
         # Second Analyses
         elif sys.argv[1] == "2":
             # (1+1) EA with strength 4, SD-(1+1) EA and SASD-(1 + 10) EA on Jump_4
             if sys.argv[2] == "1":
                 script_2_1(int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]),
-                           int(sys.argv[6]), int(sys.argv[7]), int(sys.argv[8]), sys.argv[9])
+                           int(sys.argv[6]), int(sys.argv[7]), int(sys.argv[8]))
             elif sys.argv[2] == "2":
                 script_2_2(int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]), int(sys.argv[6]),
-                           int(sys.argv[7]), int(sys.argv[8]), int(sys.argv[9]), sys.argv[10])
+                           int(sys.argv[7]), int(sys.argv[8]), int(sys.argv[9]))
 
 
 main()

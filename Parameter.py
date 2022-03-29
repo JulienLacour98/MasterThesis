@@ -44,13 +44,33 @@ def update_parameter(value, size):
     elif value == "size^3.1":
         return math.ceil(np.power(size, 3.1))
     elif value == "ln(size)":
-        return int(math.ceil(math.log(size)))
+        return math.ceil(math.ceil(math.log(size)))
+    elif value == "ln":
+        return math.ceil(math.ceil(math.log(size)))
+    elif value == "5ln":
+        return math.ceil(5*math.ceil(math.log(size)))
+    elif value == "25ln":
+        return math.ceil(25*math.ceil(math.log(size)))
+    elif value == "125ln":
+        return math.ceil(125*math.ceil(math.log(size)))
+    elif value == "625ln":
+        return math.ceil(625*math.ceil(math.log(size)))
+    elif value == "3125ln":
+        return math.ceil(3125*math.ceil(math.log(size)))
     elif value == "size/2":
         return int(size/2)
     elif value == "size/4":
         return int(size/4)
     elif value == "sqrt*ln":
         return math.ceil(math.sqrt(size) * math.log(size))
+    elif value == "5sqrt*ln":
+        return math.ceil(5 * math.sqrt(size) * math.log(size))
+    elif value == "125sqrt*ln":
+        return math.ceil(125* math.sqrt(size) * math.log(size))
+    elif value == "625sqrt*ln":
+        return math.ceil(625* math.sqrt(size) * math.log(size))
+    elif value == "3125sqrt*ln":
+        return math.ceil(3125 * math.sqrt(size) * math.log(size))
     else:
         return value
             
