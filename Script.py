@@ -54,7 +54,7 @@ def script_1_1(start_length, end_length, length_step, runs, nb_cores):
 
 # Evaluate cGA on OneMax with different values for K (coef * sqrt(n) * ln(n))
 def script_1_2(start_length, end_length, length_step, runs, nb_cores):
-    coefs = ["sqrt*ln", "5sqrt*ln", "125sqrt*ln", "625*sqrt*ln", "3125sqrt*ln"]
+    coefs = ["sqrt*ln", "5sqrt*ln", "25sqrt*ln", "125sqrt*ln", "625sqrt*ln", "3125sqrt*ln"]
 
     for i in range(len(coefs)):
         cGA.parameters[0].default_value = coefs[i]
@@ -63,7 +63,7 @@ def script_1_2(start_length, end_length, length_step, runs, nb_cores):
 
 # Evaluate cGA on OneMax with different values for K (coef * ln(n))
 def script_1_3(start_length, end_length, length_step, runs, nb_cores):
-    coefs = ["ln", "5ln", "125ln", "625ln", "3125ln"]
+    coefs = ["ln", "5ln", "25ln", "125ln", "625ln", "3125ln"]
     for i in range(len(coefs)):
         cGA.parameters[0].default_value = coefs[i]
         general_run(cGA, OneMax, start_length, end_length, length_step, runs, nb_cores)
