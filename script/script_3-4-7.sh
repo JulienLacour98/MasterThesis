@@ -3,7 +3,7 @@
 ### -- specify queue --
 #BSUB -q hpc
 ### -- set the job Name --
-#BSUB -J Script_3-3-7
+#BSUB -J Script_3-4-7
 ### -- ask for number of cores (default: 1) --
 #BSUB -n 20
 ### -- specify that the cores must be on the same host --
@@ -22,8 +22,8 @@
 #BSUB -N
 ### -- Specify the output and error file. %J is the job-id --
 ### -- -o and -e mean append, -oo and -eo mean overwrite --
-#BSUB -o Script_3-3-7_%J.csv
-#BSUB -e Error_3-3-7_%J.err
+#BSUB -o Script_3-4-7_%J.csv
+#BSUB -e Error_3-4-7_%J.err
 
 ### — Add modules necessary to execute the script
 ##module load <list of the modules the program needs>

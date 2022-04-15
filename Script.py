@@ -111,7 +111,7 @@ def script_3_1(index_algorithm, index_fitness, start_length, end_length, length_
                  (JumpOffsetSpikeM, [8]),
                  (CliffD, [4]),
                  (HurdleW, [4]),
-                 NeedGlobalMutM, []]
+                 (NeedGlobalMutM, [])]
 
     for i in range(len(algorithms[index_algorithm][1])):
         algorithms[index_algorithm][0].parameters[i].default_value = algorithms[index_algorithm][1][i]
