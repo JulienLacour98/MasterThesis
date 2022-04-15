@@ -339,10 +339,8 @@ class R1(ActionInterface):
                 evolutionary_parameter_values.append(evolutionary_parameter_value.get())
 
             # Running the evolutionary algorithm on the fitness function
-            bit_string, iterations, timer, x, y = self.evolutionary_algorithm.solve(evolutionary_parameter_values,
-                                                                                    problem_size,
-                                                                                    self.fitness_function,
-                                                                                    fitness_parameter_values, True)
+            bit_string, iterations, timer, x, y = self.evolutionary_algorithm.solve_fitness(
+                evolutionary_parameter_values, problem_size, self.fitness_function, fitness_parameter_values, True)
             tk.Label(self, text="The solution was found in " + str(round(timer, 2)) + " seconds")\
                 .grid(row=start_row, column=1, padx=5, pady=5)
             tk.Label(self, text="The solution was found in " + str(iterations) + " iterations")\
@@ -571,3 +569,48 @@ class RKNM(ActionInterface):
         self.yss = []
         self.solve_k_n_m_times(start_row, size_row, size_column, step_row, step_column, fitness_row, fitness_column,
                                evolutionary_row, evolutionary_column)
+
+
+class SAT(ActionInterface):
+
+    def __init__(self, class_name, parent, controller, action,
+                 problem_size, problem_size_end, step, iterations,
+                 fitness_function, fitness_parameter_values,
+                 evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss):
+
+        super().__init__(class_name, parent, controller, action,
+                         problem_size, problem_size, step, iterations,
+                         fitness_function, fitness_parameter_values,
+                         evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss)
+
+        evolutionary_row = self.choice_of_evolutionary_algorithm(2)
+        row = self.choice_of_evolutionary_parameters(evolutionary_row)
+
+        # Solve the problem and display results
+        display_button = ttk.Button(self, text="Run", command=lambda: self.solve(row + 1, evolutionary_row, 3))
+        display_button.grid(row=row, column=2, padx=5, pady=5)
+
+    # Solving the fitness function using one evolutionary algorithm
+    def solve(self, start_row,
+              evolutionary_row, evolutionary_column):
+        # Check that all the parameters are ok
+        if self.check_evolutionary_parameters(evolutionary_row, evolutionary_column):
+            evolutionary_parameter_values = []
+            for evolutionary_parameter_value in self.evolutionary_parameter_values:
+                evolutionary_parameter_values.append(evolutionary_parameter_value.get())
+
+            # Running the evolutionary algorithm on the fitness function
+            bit_string, iterations, timer, x, y = self.evolutionary_algorithm.solve_SAT(
+                evolutionary_parameter_values, sat, True)
+            tk.Label(self, text="The solution was found in " + str(round(timer, 2)) + " seconds") \
+                .grid(row=start_row, column=1, padx=5, pady=5)
+            tk.Label(self, text="The solution was found in " + str(iterations) + " iterations") \
+                .grid(row=start_row + 1, column=1, padx=5, pady=5)
+            tk.Label(self, text="The solution found is " + bit_string.string) \
+                .grid(row=start_row + 2, column=1, padx=5, pady=5)
+
+            build_plot(self, [("Iteration", sat.name, self.evolutionary_algorithm.name)],
+                       [x], [y], start_row + 3, 1, "Improvements of the bit string", 'iterations', 'f(x)')
+
+
+

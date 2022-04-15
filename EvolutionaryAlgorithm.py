@@ -18,7 +18,7 @@ class EvolutionaryAlgorithm:
         evolutionary_algorithm_names.append(self.name)
 
     # Solve a fitness function with the algorithm and returns the solution, running times and different iterations
-    def solve(self, evolutionary_parameters, size, fitness_function, fitness_parameters, get_path):
+    def solve_fitness(self, evolutionary_parameters, size, fitness_function, fitness_parameters, get_path):
         t1 = time.time()
         bit_string, iterations, x, y = self.algorithm(evolutionary_parameters,
                                                       size,
@@ -27,6 +27,16 @@ class EvolutionaryAlgorithm:
                                                       get_path)
         t2 = time.time()
         return bit_string.string, iterations, t2 - t1, x, y
+
+    def solve_SAT(self, evolutionary_parameters, sat_problem, get_path):
+        t1 = time.time()
+        bit_string , iterations, x, y = self.algorithm(evolutionary_parameters,
+                                                       sat_problem.number_of_variables,
+                                                       sat_problem,
+                                                       [],
+                                                       get_path)
+        t2 = time.time()
+        return bit_string, iterations, t2- t1,  x, y
 
 
 # Algorithm for the (1+1) EA

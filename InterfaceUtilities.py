@@ -12,6 +12,7 @@ from datetime import datetime
 
 from EvolutionaryAlgorithm import *
 from FitnessFunction import *
+from SAT import *
 
 
 # Create frame with return button if not the main page
@@ -192,8 +193,8 @@ def run_parallel(iterations, size, evolutionary_algorithm, evolutionary_paramete
 # returning the number of call to the fitness function
 def solve_partial(size, evolutionary_algorithm, evolutionary_parameter_values,
                   fitness_function, fitness_parameter_values, i):
-    _, iterations, _, _, _ = evolutionary_algorithm.solve(evolutionary_parameter_values,
-                                                          size, fitness_function, fitness_parameter_values, False)
+    _, iterations, _, _, _ = evolutionary_algorithm.solve_fitness(evolutionary_parameter_values, size, fitness_function,
+                                                                  fitness_parameter_values, False)
     return iterations
 
 

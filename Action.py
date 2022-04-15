@@ -26,5 +26,9 @@ RunFromNtoM = Action("RNM", "4_statistical_range_lengths",
 
 # Creation of Run k fitness function for a range of problem sizes
 RunKFromNtoM = Action("RKNM", "5_comparison_algorithms",
-                      "5 - Comparison of several evolutionary algorithms on a fitness function "
+                      "5 - Comparison of several evolutionary algorithms on a fitness function"
                       "for a range of problem sizes")
+
+# Creation of the SAT Solving page
+SAT_Solving = Action("SAT", "6_SAT",
+                     "6 - Solve a MAX-SAT problem")
