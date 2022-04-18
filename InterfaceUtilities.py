@@ -1,4 +1,3 @@
-import os
 import multiprocessing
 import sys
 
@@ -6,6 +5,7 @@ import pandas as pd
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
+from tkinter import filedialog
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 from datetime import datetime
@@ -196,5 +196,7 @@ def solve_partial(size, evolutionary_algorithm, evolutionary_parameter_values,
     _, iterations, _, _, _ = evolutionary_algorithm.solve_fitness(evolutionary_parameter_values, size, fitness_function,
                                                                   fitness_parameter_values, False)
     return iterations
+
+
 
 

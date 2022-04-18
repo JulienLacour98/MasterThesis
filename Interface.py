@@ -1,4 +1,6 @@
 # TODO - Clean how the classes are created -> try to remove useless attributes from main classes
+import tkinter
+
 from Action import *
 from InterfaceUtilities import *
 
@@ -23,6 +25,7 @@ class ActionInterface(Interface):
                  problem_size, problem_size_end, step, iterations,
                  fitness_function_name, fitness_parameter_values,
                  evolutionary_algorithm_name, evolutionary_parameter_values,
+                 sat_file_name,
                  labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller)
@@ -35,6 +38,8 @@ class ActionInterface(Interface):
         self.evolutionary_algorithm = find_evolutionary(evolutionary_algorithm_name.get())
         self.evolutionary_parameters = self.evolutionary_algorithm.parameters
         self.evolutionary_parameter_values = evolutionary_parameter_values
+        self.sat_file_name = sat_file_name
+        self.sat_problem = SAT(sat_file_name)
         self.problem_size = problem_size
         self.problem_size_end = problem_size_end
         self.step = step
@@ -161,6 +166,32 @@ class ActionInterface(Interface):
             # Returning the next free row
             return start_row + len(self.evolutionary_parameters)
 
+    def choice_of_sat_file(self, start_row):
+        tkinter.Label(self, text="Choose a MAX-SAT problem:")\
+            .grid(row=start_row, column=0, padx=5, pady=5)
+        tkinter.Label(self, text=self.sat_problem.name)\
+            .grid(row=start_row, column=1, padx=5, pady=5)
+
+        # Browse file button
+        button = ttk.Button(self, text="Browse file", command=lambda: self.get_file_name(start_row))
+        button.grid(row=start_row, column=2, padx=5, pady=5)
+
+        return start_row + 1
+
+    def get_file_name(self, row):
+        file_name = filedialog.askopenfilename(initialdir="cnf",
+                                               title="Select a File",
+                                               filetypes=([("CNF files", "*.cnf")])
+                                               )
+        self.sat_file_name = file_name
+        self.sat_problem = SAT(self.sat_file_name)
+
+        for label in self.grid_slaves():
+            if int(label.grid_info()["row"]) == row and  int(label.grid_info()["column"]) == 1:
+                label.grid_forget()
+        tkinter.Label(self, text=self.sat_problem.name) \
+            .grid(row=row, column=1, padx=5, pady=5)
+
     # Checking that the length is consistent with the constraint of the fitness function
     # Display constraint if not respected / Erase if respected
     def check_size(self, size_row, size_column):
@@ -259,12 +290,14 @@ class DF(ActionInterface):
     def __init__(self, class_name, parent, controller, action,
                  problem_size, problem_size_end, step, iterations,
                  fitness_function, fitness_parameter_values,
-                 evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss):
+                 evolutionary_algorithm, evolutionary_parameter_values,
+                 sat_file_name, labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
                          problem_size, problem_size, step, iterations,
                          fitness_function, fitness_parameter_values,
-                         evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss)
+                         evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                         labels, xs, ys, yss)
 
         row = self.choice_of_problem_size(2)
         fitness_row = self.choice_of_fitness_function(row)
@@ -304,12 +337,14 @@ class R1(ActionInterface):
     def __init__(self, class_name, parent, controller, action,
                  problem_size, problem_size_end, step, iterations,
                  fitness_function, fitness_parameter_values,
-                 evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss):
+                 evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                 labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
                          problem_size, problem_size, step, iterations,
                          fitness_function, fitness_parameter_values,
-                         evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss)
+                         evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                         labels, xs, ys, yss)
 
         row = self.choice_of_problem_size(2)
         fitness_row = self.choice_of_fitness_function(row)
@@ -356,12 +391,14 @@ class RN(ActionInterface):
     def __init__(self, class_name, parent, controller, action,
                  problem_size, problem_size_end, step, iterations,
                  fitness_function, fitness_parameter_values,
-                 evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss):
+                 evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                 labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
                          problem_size, problem_size, step, iterations,
                          fitness_function, fitness_parameter_values,
-                         evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss)
+                         evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                         labels, xs, ys, yss)
 
         row = self.choice_of_problem_size(2)
         row = self.choice_of_number_of_iterations(row)
@@ -416,12 +453,14 @@ class RNM(ActionInterface):
     def __init__(self, class_name, parent, controller, action,
                  problem_size, problem_size_end, step, iterations,
                  fitness_function, fitness_parameter_values,
-                 evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss):
+                 evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                 labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
                          problem_size, problem_size_end, step, iterations,
                          fitness_function, fitness_parameter_values,
-                         evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss)
+                         evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                         labels, xs, ys, yss)
 
         row = self.choice_of_problem_range(2)
         row = self.choice_of_number_of_iterations(row)
@@ -479,12 +518,14 @@ class RKNM(ActionInterface):
     def __init__(self, class_name, parent, controller, action,
                  problem_size, problem_size_end, step, iterations,
                  fitness_function, fitness_parameter_values,
-                 evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss):
+                 evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                 labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
                          problem_size, problem_size_end, step, iterations,
                          fitness_function, fitness_parameter_values,
-                         evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss)
+                         evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                         labels, xs, ys, yss)
 
         row = self.choice_of_problem_range(2)
         row = self.choice_of_number_of_iterations(row)
@@ -571,20 +612,23 @@ class RKNM(ActionInterface):
                                evolutionary_row, evolutionary_column)
 
 
-class SAT(ActionInterface):
+class ISAT(ActionInterface):
 
     def __init__(self, class_name, parent, controller, action,
                  problem_size, problem_size_end, step, iterations,
                  fitness_function, fitness_parameter_values,
-                 evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss):
+                 evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                 labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
                          problem_size, problem_size, step, iterations,
                          fitness_function, fitness_parameter_values,
-                         evolutionary_algorithm, evolutionary_parameter_values, labels, xs, ys, yss)
+                         evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                         labels, xs, ys, yss)
 
         evolutionary_row = self.choice_of_evolutionary_algorithm(2)
         row = self.choice_of_evolutionary_parameters(evolutionary_row)
+        row = self.choice_of_sat_file(row)
 
         # Solve the problem and display results
         display_button = ttk.Button(self, text="Run", command=lambda: self.solve(row + 1, evolutionary_row, 3))
@@ -601,7 +645,7 @@ class SAT(ActionInterface):
 
             # Running the evolutionary algorithm on the fitness function
             bit_string, iterations, timer, x, y = self.evolutionary_algorithm.solve_SAT(
-                evolutionary_parameter_values, sat, True)
+                evolutionary_parameter_values, self.sat_problem, True)
             tk.Label(self, text="The solution was found in " + str(round(timer, 2)) + " seconds") \
                 .grid(row=start_row, column=1, padx=5, pady=5)
             tk.Label(self, text="The solution was found in " + str(iterations) + " iterations") \
@@ -609,7 +653,7 @@ class SAT(ActionInterface):
             tk.Label(self, text="The solution found is " + bit_string.string) \
                 .grid(row=start_row + 2, column=1, padx=5, pady=5)
 
-            build_plot(self, [("Iteration", sat.name, self.evolutionary_algorithm.name)],
+            build_plot(self, [("Iteration", self.sat_problem.name, self.evolutionary_algorithm.name)],
                        [x], [y], start_row + 3, 1, "Improvements of the bit string", 'iterations', 'f(x)')
 
 
