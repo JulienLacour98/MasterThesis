@@ -90,7 +90,7 @@ class ActionInterface(Interface):
                                     default_parameters(fitness_function, self.problem_size.get()),
                                     self.evolutionary_algorithm_name,
                                     self.evolutionary_parameter_values,
-                                    self.sat_file_name,
+                                    self.sat_file_name, self.sat_folder_name,
                                     [], [], [], [])
         new_frame.grid(row=0, column=0, sticky="nsew")
         # Display this new frame
@@ -136,7 +136,7 @@ class ActionInterface(Interface):
                                     self.fitness_function_name, self.fitness_parameter_values,
                                     new_evolutionary_name,
                                     default_parameters(evolutionary_algorithm, self.problem_size.get()),
-                                    self.sat_file_name,
+                                    self.sat_file_name, self.sat_folder_name,
                                     self.labels, self.xs, self.ys, self.yss)
         new_frame.grid(row=0, column=0, sticky="nsew")
         new_frame.tkraise()
