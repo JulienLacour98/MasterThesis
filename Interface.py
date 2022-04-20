@@ -25,7 +25,7 @@ class ActionInterface(Interface):
                  problem_size, problem_size_end, step, iterations,
                  fitness_function_name, fitness_parameter_values,
                  evolutionary_algorithm_name, evolutionary_parameter_values,
-                 sat_file_name,
+                 sat_file_name, sat_folder_name,
                  labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller)
@@ -40,6 +40,8 @@ class ActionInterface(Interface):
         self.evolutionary_parameter_values = evolutionary_parameter_values
         self.sat_file_name = sat_file_name
         self.sat_problem = SAT(sat_file_name)
+        self.sat_folder_name = sat_folder_name
+        self.sat_problems = sats(sat_folder_name)
         self.problem_size = problem_size
         self.problem_size_end = problem_size_end
         self.step = step
@@ -194,6 +196,31 @@ class ActionInterface(Interface):
         tkinter.Label(self, text=self.sat_problem.name) \
             .grid(row=row, column=1, padx=5, pady=5)
 
+    def choice_of_sat_folder(self, start_row):
+        tkinter.Label(self, text="Choose folder of MAX-SAT problems:") \
+            .grid(row=start_row, column=0, padx=5, pady=5)
+        tkinter.Label(self, text=self.sat_folder_name) \
+            .grid(row=start_row, column=1, padx=5, pady=5)
+
+        # Browse file button
+        button = ttk.Button(self, text="Browse folder", command=lambda: self.get_folder_name(start_row))
+        button.grid(row=start_row, column=2, padx=5, pady=5)
+
+        return start_row + 1
+
+    def get_folder_name(self, row):
+        folder_name = filedialog.askdirectory(initialdir="cnf",
+                                              title="Select a folder"
+                                              )
+        self.sat_folder_name = os.path.basename(folder_name)
+        self.sat_problems = sats(folder_name)
+
+        for label in self.grid_slaves():
+            if int(label.grid_info()["row"]) == row and int(label.grid_info()["column"]) == 1:
+                label.grid_forget()
+        tkinter.Label(self, text=self.sat_folder_name) \
+            .grid(row=row, column=1, padx=5, pady=5)
+
     # Checking that the length is consistent with the constraint of the fitness function
     # Display constraint if not respected / Erase if respected
     def check_size(self, size_row, size_column):
@@ -293,12 +320,14 @@ class DF(ActionInterface):
                  problem_size, problem_size_end, step, iterations,
                  fitness_function, fitness_parameter_values,
                  evolutionary_algorithm, evolutionary_parameter_values,
-                 sat_file_name, labels, xs, ys, yss):
+                 sat_file_name, sat_folder_name,
+                 labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
                          problem_size, problem_size, step, iterations,
                          fitness_function, fitness_parameter_values,
-                         evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                         evolutionary_algorithm, evolutionary_parameter_values,
+                         sat_file_name, sat_folder_name,
                          labels, xs, ys, yss)
 
         row = self.choice_of_problem_size(2)
@@ -339,13 +368,15 @@ class R1(ActionInterface):
     def __init__(self, class_name, parent, controller, action,
                  problem_size, problem_size_end, step, iterations,
                  fitness_function, fitness_parameter_values,
-                 evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                 evolutionary_algorithm, evolutionary_parameter_values,
+                 sat_file_name, sat_folder_name,
                  labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
                          problem_size, problem_size, step, iterations,
                          fitness_function, fitness_parameter_values,
-                         evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                         evolutionary_algorithm, evolutionary_parameter_values,
+                         sat_file_name, sat_folder_name,
                          labels, xs, ys, yss)
 
         row = self.choice_of_problem_size(2)
@@ -393,13 +424,15 @@ class RN(ActionInterface):
     def __init__(self, class_name, parent, controller, action,
                  problem_size, problem_size_end, step, iterations,
                  fitness_function, fitness_parameter_values,
-                 evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                 evolutionary_algorithm, evolutionary_parameter_values,
+                 sat_file_name, sat_folder_name,
                  labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
                          problem_size, problem_size, step, iterations,
                          fitness_function, fitness_parameter_values,
-                         evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                         evolutionary_algorithm, evolutionary_parameter_values,
+                         sat_file_name, sat_folder_name,
                          labels, xs, ys, yss)
 
         row = self.choice_of_problem_size(2)
@@ -455,13 +488,15 @@ class RNM(ActionInterface):
     def __init__(self, class_name, parent, controller, action,
                  problem_size, problem_size_end, step, iterations,
                  fitness_function, fitness_parameter_values,
-                 evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                 evolutionary_algorithm, evolutionary_parameter_values,
+                 sat_file_name, sat_folder_name,
                  labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
-                         problem_size, problem_size_end, step, iterations,
+                         problem_size, problem_size, step, iterations,
                          fitness_function, fitness_parameter_values,
-                         evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                         evolutionary_algorithm, evolutionary_parameter_values,
+                         sat_file_name, sat_folder_name,
                          labels, xs, ys, yss)
 
         row = self.choice_of_problem_range(2)
@@ -520,13 +555,15 @@ class RKNM(ActionInterface):
     def __init__(self, class_name, parent, controller, action,
                  problem_size, problem_size_end, step, iterations,
                  fitness_function, fitness_parameter_values,
-                 evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                 evolutionary_algorithm, evolutionary_parameter_values,
+                 sat_file_name, sat_folder_name,
                  labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
-                         problem_size, problem_size_end, step, iterations,
+                         problem_size, problem_size, step, iterations,
                          fitness_function, fitness_parameter_values,
-                         evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                         evolutionary_algorithm, evolutionary_parameter_values,
+                         sat_file_name, sat_folder_name,
                          labels, xs, ys, yss)
 
         row = self.choice_of_problem_range(2)
@@ -619,13 +656,15 @@ class ISAT(ActionInterface):
     def __init__(self, class_name, parent, controller, action,
                  problem_size, problem_size_end, step, iterations,
                  fitness_function, fitness_parameter_values,
-                 evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                 evolutionary_algorithm, evolutionary_parameter_values,
+                 sat_file_name, sat_folder_name,
                  labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
                          problem_size, problem_size, step, iterations,
                          fitness_function, fitness_parameter_values,
-                         evolutionary_algorithm, evolutionary_parameter_values, sat_file_name,
+                         evolutionary_algorithm, evolutionary_parameter_values,
+                         sat_file_name, sat_folder_name,
                          labels, xs, ys, yss)
 
         evolutionary_row = self.choice_of_evolutionary_algorithm(2)
@@ -659,4 +698,60 @@ class ISAT(ActionInterface):
                        [x], [y], start_row + 3, 1, "Improvements of the bit string", 'iterations', 'f(x)')
 
 
+class ISATS(ActionInterface):
+    def __init__(self, class_name, parent, controller, action,
+                 problem_size, problem_size_end, step, iterations,
+                 fitness_function, fitness_parameter_values,
+                 evolutionary_algorithm, evolutionary_parameter_values,
+                 sat_file_name, sat_folder_name,
+                 labels, xs, ys, yss):
 
+        super().__init__(class_name, parent, controller, action,
+                         problem_size, problem_size, step, iterations,
+                         fitness_function, fitness_parameter_values,
+                         evolutionary_algorithm, evolutionary_parameter_values,
+                         sat_file_name, sat_folder_name,
+                         labels, xs, ys, yss)
+
+        evolutionary_row = self.choice_of_evolutionary_algorithm(2)
+        row = self.choice_of_evolutionary_parameters(evolutionary_row)
+        row = self.choice_of_sat_folder(row)
+
+        # Solve the problem and display results
+        display_button = ttk.Button(self, text="Run", command=lambda: self.solve(row + 1, evolutionary_row, 3))
+        display_button.grid(row=row, column=2, padx=5, pady=5)
+
+    # Solving the fitness function using one evolutionary algorithm
+    def solve(self, start_row,
+              evolutionary_row, evolutionary_column):
+        # Check that all the parameters are ok
+        if self.check_evolutionary_parameters(evolutionary_row, evolutionary_column):
+            evolutionary_parameter_values = []
+            for evolutionary_parameter_value in self.evolutionary_parameter_values:
+                evolutionary_parameter_values.append(evolutionary_parameter_value.get())
+
+            results = run_parallel_sat(self.evolutionary_algorithm, evolutionary_parameter_values,
+                                       self.sat_problems, cores)
+
+            self.xs = []
+            self.ys = np.empty(len(results))
+
+            for i in range(len(results)):
+                self.xs.append(results[i][0])
+                self.ys[i] = results[i][1]
+
+            # Find a better way of representing things here
+            tk.Label(self, text="The minimum number of iterations is: " + str(int(self.ys.min()))) \
+                .grid(row=start_row, column=1, padx=5, pady=5)
+            tk.Label(self, text="The maximum number of iterations is: " + str(int(self.ys.max()))) \
+                .grid(row=start_row + 1, column=1, padx=5, pady=5)
+            tk.Label(self, text="The mean of the number of iterations is: " + str(round(self.ys.mean(), 2))) \
+                .grid(row=start_row + 2, column=1, padx=5, pady=5)
+            tk.Label(self, text="The standard deviation of the number of iterations is: " +
+                                str(round(np.std(self.ys), 2))) \
+                .grid(row=start_row + 3, column=1, padx=5, pady=5)
+            tk.Label(self, text="The median of the number of iterations is: " + str(int(np.median(self.ys)))) \
+                .grid(row=start_row + 4, column=1, padx=5, pady=5)
+
+            build_plot(self, [("File Name", "iterations", self.evolutionary_algorithm.name)],
+                       [self.xs], [self.ys], start_row + 5, 1, "Results", 'File name', 'iterations')

@@ -198,5 +198,23 @@ def solve_partial(size, evolutionary_algorithm, evolutionary_parameter_values,
     return iterations
 
 
+# Function running n times an algorithm on a fitness function using parallel programming
+def run_parallel_sat(evolutionary_algorithm, evolutionary_parameter_values,
+                     sat_problems, cores):
+    pool = multiprocessing.Pool(cores)
+    results = pool.map(functools.partial(solve_partial_sat,
+                       evolutionary_algorithm, evolutionary_parameter_values), sat_problems)
+    pool.close()
+    return np.array(results)
+
+
+# Function solving an evolutionary algorithm on a fitness function and
+# returning the number of call to the fitness function
+def solve_partial_sat(evolutionary_algorithm, evolutionary_parameter_values, sat_problem):
+    _, iterations, _, _, _ = evolutionary_algorithm.solve_SAT(evolutionary_parameter_values, sat_problem, False)
+    print(sat_problem.name)
+    return sat_problem.name, iterations
+
+
 
 

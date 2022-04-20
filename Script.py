@@ -121,5 +121,3 @@ def script_3_1(index_algorithm, index_fitness, start_length, end_length, length_
 
     general_run(algorithms[index_algorithm][0], functions[index_fitness][0],
                 start_length, end_length, length_step, runs, nb_cores)
-
-

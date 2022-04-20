@@ -32,3 +32,7 @@ RunKFromNtoM = Action("RKNM", "5_comparison_algorithms",
 # Creation of the SAT Solving page
 SAT_Solving = Action("ISAT", "6_SAT",
                      "6 - Solve a MAX-SAT problem")
+
+# Creation of the SAT Solving page
+SATS_Solving = Action("ISATS", "7_SATS",
+                      "7 - Statistical analysis on MAX-SAT problems")

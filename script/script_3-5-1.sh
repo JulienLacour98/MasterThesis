@@ -3,7 +3,7 @@
 ### -- specify queue --
 #BSUB -q hpc
 ### -- set the job Name --
-#BSUB -J Script_3-4-6
+#BSUB -J Script_3-5-1
 ### -- ask for number of cores (default: 1) --
 #BSUB -n 20
 ### -- specify that the cores must be on the same host --
@@ -22,8 +22,8 @@
 #BSUB -N
 ### -- Specify the output and error file. %J is the job-id --
 ### -- -o and -e mean append, -oo and -eo mean overwrite --
-#BSUB -o Script_3-4-6_%J.csv
-#BSUB -e Error_3-4-6_%J.err
+#BSUB -o Script_3-5-1_%J.csv
+#BSUB -e Error_3-5-1_%J.err
 
 ### — Add modules necessary to execute the script
 ##module load <list of the modules the program needs>
@@ -36,4 +36,4 @@ module load pandas/1.3.1-python-3.9.6
 
 
 # here follow the commands you want to execute
-python3 Main.py 3 1 5 2 40 160 20 1000 20
+python3 Main.py 3 1 0 5 20 60 5 100 20

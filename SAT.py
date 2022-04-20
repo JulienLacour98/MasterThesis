@@ -66,3 +66,17 @@ class SAT:
     def maximum(self, _, size):
         # TODO - Change when all clauses are not solvable
         return self.number_of_clauses
+
+
+def sats(folder_name):
+    sat_array = []
+
+    if os.path.exists(folder_name):
+        for filename in os.listdir(folder_name):
+            f = os.path.join(folder_name, filename)
+            if os.path.isfile(f) and os.path.splitext(f)[1] == ".cnf":
+                sat = SAT(f)
+                sat_array.append(sat)
+
+    sat_array.sort(key=lambda x: x.name)
+    return sat_array
