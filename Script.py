@@ -41,6 +41,29 @@ def general_run(evolutionary_algorithm,
         print(line)
 
 
+def cga_prob(evolutionary_algorithm, fitness_function, length, runs, max_iter, nb_cores):
+
+    print(evolutionary_algorithm.name)
+    print(fitness_function.name)
+    print("Length: " + str(length) + ";" + "Parameters: " + str(default_parameters(evolutionary_algorithm, length)))
+    yss = run_parallel_cga(runs, length, max_iter,
+                           evolutionary_algorithm,
+                           default_parameters(evolutionary_algorithm, length),
+                           fitness_function,
+                           default_parameters(fitness_function, length),
+                           nb_cores)
+
+    header = "iterations;"
+    for i in range(length):
+        header += str(i+1) + ";"
+    print(header)
+    for i in range(runs):
+        line = ""
+        for j in range(len(yss[i])):
+            line += str(yss[i][j]) + ";"
+        print(line)
+
+
 # Evaluate all the algorithms on OneMax
 def script_1_1(start_length, end_length, length_step, runs, nb_cores):
     MuPlusOneDeterministic.parameters[0].default_value = 10
@@ -96,6 +119,27 @@ def script_2_2(index_algorithm, index_fitness, start_length, end_length, length_
 
     general_run(algorithms[index_algorithm][0], functions[index_fitness][0],
                 start_length, end_length, length_step, runs, nb_cores)
+
+
+def script_2_3(index_algorithm, index_fitness, start_length, end_length, length_step, runs, max_iter, nb_cores):
+    algorithms = [(cGA, ["sqrt*ln"]),
+                  (cGA, ["5sqrt*ln"]),
+                  (cGA, ["25sqrt*ln"]),
+                  (cGA, ["125sqrt*ln"])]
+    functions = [(JumpM, [4]),
+                 (JumpOffsetM, [4]),
+                 (JumpOffsetSpikeM, [4]),
+                 (JumpOffsetSpikeM, [8])]
+
+    for i in range(len(algorithms[index_algorithm][1])):
+        algorithms[index_algorithm][0].parameters[i].default_value = algorithms[index_algorithm][1][i]
+
+    for i in range(len(functions[index_fitness][1])):
+        functions[index_fitness][0].parameters[i].default_value = functions[index_fitness][1][i]
+
+    for length in range(start_length, end_length+1, length_step):
+        cga_prob(algorithms[index_algorithm][0], functions[index_fitness][0],
+                 length, runs, max_iter, nb_cores)
 
 
 def script_3_1(index_algorithm, index_fitness, start_length, end_length, length_step, runs, nb_cores):

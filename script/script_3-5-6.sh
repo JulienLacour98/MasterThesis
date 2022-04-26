@@ -36,4 +36,4 @@ module load pandas/1.3.1-python-3.9.6
 
 
 # here follow the commands you want to execute
-python3 Main.py 3 1 5 5 20 60 5 100 20
+python3 Main.py 3 1 5 5 20 60 5 50 20

@@ -1,5 +1,6 @@
-import time
+# TODO - Fix how get proba is done
 
+import time
 
 from Parameter import *
 from Constraint import *
@@ -18,13 +19,16 @@ class EvolutionaryAlgorithm:
         evolutionary_algorithm_names.append(self.name)
 
     # Solve a fitness function with the algorithm and returns the solution, running times and different iterations
-    def solve_fitness(self, evolutionary_parameters, size, fitness_function, fitness_parameters, get_path):
+    def solve_fitness(self, evolutionary_parameters, size, fitness_function, fitness_parameters, get_path,
+                      max_iter=float('inf'), get_proba=False):
         t1 = time.time()
         bit_string, iterations, x, y = self.algorithm(evolutionary_parameters,
                                                       size,
                                                       fitness_function,
                                                       fitness_parameters,
-                                                      get_path)
+                                                      get_path,
+                                                      max_iter,
+                                                      get_proba)
         t2 = time.time()
         return bit_string.string, iterations, t2 - t1, x, y
 
@@ -40,7 +44,7 @@ class EvolutionaryAlgorithm:
 
 
 # Algorithm for the (1+1) EA
-def one_plus_one(parameters, n, fitness_function, fitness_parameters, get_path):
+def one_plus_one(parameters, n, fitness_function, fitness_parameters, get_path, max_iter, get_proba):
     r = parameters[0]
     # Creation of a random bit string of length n
     bit_string = BitString(n)
@@ -70,7 +74,7 @@ def one_plus_one(parameters, n, fitness_function, fitness_parameters, get_path):
 
 
 # Algorithm for the SD-(1+1) EA
-def sd_one_plus_one(parameters, n, fitness_function, fitness_parameters, get_path):
+def sd_one_plus_one(parameters, n, fitness_function, fitness_parameters, get_path, max_iter, get_proba):
     R = parameters[0]
     # Creation of a random bit string of length "size"
     bit_string = BitString(n)
@@ -124,7 +128,7 @@ def sd_one_plus_one(parameters, n, fitness_function, fitness_parameters, get_pat
 
 
 # Algorithm for the SASD-(1+1) EA
-def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters, get_path):
+def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters, get_path, max_iter, get_proba):
     lbd = parameters[0]
     r_init = parameters[1]
     R = parameters[2]
@@ -238,7 +242,7 @@ def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters, ge
 
 
 # Algorithm for the SD-RLS_r algorithm
-def sd_rls_r(parameters, n, fitness_function, fitness_parameters, get_path):
+def sd_rls_r(parameters, n, fitness_function, fitness_parameters, get_path, max_iter, get_proba):
     R = parameters[0]
     # Creation of a random bit-string of size n
     bit_string = BitString(n)
@@ -292,7 +296,7 @@ def sd_rls_r(parameters, n, fitness_function, fitness_parameters, get_path):
 
 
 # Algorithm for the SD-RLS_m algorithm
-def sd_rls_m(parameters, n, fitness_function, fitness_parameters, get_path):
+def sd_rls_m(parameters, n, fitness_function, fitness_parameters, get_path, max_iter, get_proba):
     R = parameters[0]
     # Creation of a random bit-string of size n
     bit_string = BitString(n)
@@ -352,7 +356,7 @@ def sd_rls_m(parameters, n, fitness_function, fitness_parameters, get_path):
 
 
 # Algorithm for the SA-(1, lambda) EA
-def sa_one_lambda(parameters, n, fitness_function, fitness_parameters, get_path):
+def sa_one_lambda(parameters, n, fitness_function, fitness_parameters, get_path, max_iter, get_proba):
     lbd = parameters[0]
     F = parameters[1]
     r_init = parameters[2]
@@ -399,7 +403,7 @@ def sa_one_lambda(parameters, n, fitness_function, fitness_parameters, get_path)
 
 
 # Algorithm for the (mu+1) EA with deterministic crowding
-def mu_plus_one_deterministic(parameters, n, fitness_function, fitness_parameters, get_path):
+def mu_plus_one_deterministic(parameters, n, fitness_function, fitness_parameters, get_path, max_iter, get_proba):
     mu = parameters[0]
     population = []
     fitness_values = []
@@ -441,7 +445,7 @@ def mu_plus_one_deterministic(parameters, n, fitness_function, fitness_parameter
 
 # Algorithm for the (mu + 1) EA
 # The parameter "operator" is used to pick a parent selection operator ("Uniform" or "Inverse-K")
-def mu_plus_one(operator, parameters, n, fitness_function, fitness_parameters, get_path):
+def mu_plus_one(operator, parameters, n, fitness_function, fitness_parameters, get_path, max_iter, get_proba):
     mu = parameters[0]
     if operator == "Inverse-K":
         K = parameters[1]
@@ -508,7 +512,7 @@ def mu_plus_one(operator, parameters, n, fitness_function, fitness_parameters, g
 
 
 # Algorithm for the compact Genetic Algorithm
-def compact_genetic_algorithm(parameters, n, fitness_function, fitness_parameters, get_path):
+def compact_genetic_algorithm(parameters, n, fitness_function, fitness_parameters, get_path, max_iter, get_proba):
     K = parameters[0]
     # Initialise the probabilities of each bit to 1/2
     ps = np.full(n, 1/2)
@@ -517,7 +521,7 @@ def compact_genetic_algorithm(parameters, n, fitness_function, fitness_parameter
     iterations = 0
     xs = []
     ys = []
-    while not found_maximum:
+    while not found_maximum and iterations < max_iter:
         # Generate 2 bit strings randomly using the probabilities
         x = BitString(n)
         y = BitString(n)
@@ -552,6 +556,9 @@ def compact_genetic_algorithm(parameters, n, fitness_function, fitness_parameter
             elif x.string[i] < y.string[i]:
                 ps[i] -= 1/K
             ps[i] = max(min(ps[i], 1 - 1/n), 1/n)
+    if not get_path and get_proba:
+        xs = list(range(1, n+1))
+        ys = ps
     return x, iterations, xs, ys
 
 

@@ -198,6 +198,25 @@ def solve_partial(size, evolutionary_algorithm, evolutionary_parameter_values,
     return iterations
 
 
+def run_parallel_cga(iterations, size, max_iter, evolutionary_algorithm, evolutionary_parameter_values,
+                     fitness_function, fitness_parameter_values, cores):
+    pool = multiprocessing.Pool(cores)
+    results = pool.map(functools.partial(solve_partial_cga,
+                       size, max_iter, evolutionary_algorithm, evolutionary_parameter_values,
+                       fitness_function, fitness_parameter_values), range(iterations))
+    pool.close()
+    return np.array(results)
+
+
+def solve_partial_cga(size, max_iter,  evolutionary_algorithm, evolutionary_parameter_values,
+                      fitness_function, fitness_parameter_values, i):
+    _, iterations, _, _, ys = evolutionary_algorithm.solve_fitness(evolutionary_parameter_values, size,
+                                                                   fitness_function, fitness_parameter_values,
+                                                                   False, max_iter, True)
+
+    return np.concatenate([[iterations], ys])
+
+
 # Function running n times an algorithm on a fitness function using parallel programming
 def run_parallel_sat(evolutionary_algorithm, evolutionary_parameter_values,
                      sat_problems, cores):

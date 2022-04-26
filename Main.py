@@ -78,7 +78,7 @@ def main():
             # Run every algorithm on OneMax
             if sys.argv[2] == "1":
                 script_1_1(int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]),
-                         int(sys.argv[6]), int(sys.argv[7]))
+                           int(sys.argv[6]), int(sys.argv[7]))
             elif sys.argv[2] == "2":
                 script_1_2(int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]),
                            int(sys.argv[6]), int(sys.argv[7]))
@@ -94,6 +94,9 @@ def main():
             elif sys.argv[2] == "2":
                 script_2_2(int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]), int(sys.argv[6]),
                            int(sys.argv[7]), int(sys.argv[8]), int(sys.argv[9]))
+            elif sys.argv[2] == "3":
+                script_2_3(int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]),  int(sys.argv[6]),
+                           int(sys.argv[7]), int(sys.argv[8]), int(sys.argv[9]),  int(sys.argv[10]))
 
         elif sys.argv[1] == "3":
             if sys.argv[2] == "1":
