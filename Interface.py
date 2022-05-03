@@ -698,6 +698,7 @@ class ISAT(ActionInterface):
                        [x], [y], start_row + 3, 1, "Improvements of the bit string", 'iterations', 'f(x)')
 
 
+
 class ISATS(ActionInterface):
     def __init__(self, class_name, parent, controller, action,
                  problem_size, problem_size_end, step, iterations,

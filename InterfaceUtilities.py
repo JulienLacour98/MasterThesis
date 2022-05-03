@@ -217,7 +217,6 @@ def solve_partial_cga(size, max_iter,  evolutionary_algorithm, evolutionary_para
     return np.concatenate([[iterations], ys])
 
 
-# Function running n times an algorithm on a fitness function using parallel programming
 def run_parallel_sat(evolutionary_algorithm, evolutionary_parameter_values,
                      sat_problems, cores):
     pool = multiprocessing.Pool(cores)
@@ -231,7 +230,6 @@ def run_parallel_sat(evolutionary_algorithm, evolutionary_parameter_values,
 # returning the number of call to the fitness function
 def solve_partial_sat(evolutionary_algorithm, evolutionary_parameter_values, sat_problem):
     _, iterations, _, _, _ = evolutionary_algorithm.solve_SAT(evolutionary_parameter_values, sat_problem, False)
-    print(sat_problem.name)
     return sat_problem.name, iterations
 
 

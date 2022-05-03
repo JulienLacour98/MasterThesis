@@ -103,5 +103,9 @@ def main():
                 script_3_1(int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]), int(sys.argv[6]),
                            int(sys.argv[7]), int(sys.argv[8]), int(sys.argv[9]))
 
+        elif sys.argv[1] == "4":
+            if sys.argv[2] == "1":
+                script_4_1(int(sys.argv[3]), sys.argv[4], int(sys.argv[5]), int(sys.argv[6]), int(sys.argv[7]))
+
 
 main()

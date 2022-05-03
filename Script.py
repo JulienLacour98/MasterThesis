@@ -165,3 +165,61 @@ def script_3_1(index_algorithm, index_fitness, start_length, end_length, length_
 
     general_run(algorithms[index_algorithm][0], functions[index_fitness][0],
                 start_length, end_length, length_step, runs, nb_cores)
+
+
+def script_4_1(index_algorithm, folder_name, runs, max_iter, nb_cores):
+    algorithms = [
+        (OnePlusOne, [1]),
+        (SDOnePlusOne, ["size^3"]),
+        (SASDOnePlusLambda, [10, 1, "size^3"]),
+        (SDRLSR, ["size^3.1"]),
+        (SDRLSM, ["size^3.1"]),
+        (SAOneLambda, ["ln(size)", 2, 2]),
+        (MuPlusOneInverseK, ["size^1.2"]),
+        (cGA, ["sqrt*ln"])
+    ]
+
+    algorithm = algorithms[index_algorithm][0]
+    parameters = algorithms[index_algorithm][1]
+
+    print(algorithm.name + ";" + str(parameters) + ";")
+    header = "Sat problem;Number of variables;Number of clauses;Parameters;"
+    for i in range(1, runs+1):
+        header += str(i) + ";"
+    print(header)
+
+    sat_problems = sats(folder_name)
+    for sat_problem in sat_problems:
+
+        for i in range(len(parameters)):
+            algorithm.parameters[i].default_value = parameters[i]
+
+        parameters_instance = default_parameters(algorithm, sat_problem.number_of_variables)
+        line = sat_problem.name + ";" \
+               + str(sat_problem.number_of_variables) + ";" \
+               + str(sat_problem.number_of_clauses) + ";" \
+               + str(parameters_instance) + ";"
+
+        results = parallelize_sat(algorithm, parameters_instance, sat_problem, runs, max_iter, nb_cores)
+
+        for i in range(len(results)):
+            line += str(results[i]) + ";"
+        print(line)
+
+
+def parallelize_sat(evolutionary_algorithm, evolutionary_parameters, sat_problem, runs, max_iter, nb_cores):
+    pool = multiprocessing.Pool(nb_cores)
+    results = pool.map(functools.partial(partial_sat,
+                       evolutionary_algorithm, evolutionary_parameters, sat_problem, max_iter), range(runs))
+    pool.close()
+    return np.array(results)
+
+
+# Function solving an evolutionary algorithm on a fitness function and
+# returning the number of call to the fitness function
+def partial_sat(evolutionary_algorithm, evolutionary_parameter_values, sat_problem, max_iter, i):
+    _, iterations, _, _, _ = evolutionary_algorithm.solve_SAT(evolutionary_parameter_values,
+                                                              sat_problem,
+                                                              False, max_iter)
+    return iterations
+

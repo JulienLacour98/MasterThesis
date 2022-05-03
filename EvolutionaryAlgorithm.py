@@ -32,15 +32,20 @@ class EvolutionaryAlgorithm:
         t2 = time.time()
         return bit_string.string, iterations, t2 - t1, x, y
 
-    def solve_SAT(self, evolutionary_parameters, sat_problem, get_path):
+    def solve_SAT(self, evolutionary_parameters, sat_problem, get_path, max_iter=float('inf')):
         t1 = time.time()
-        bit_string , iterations, x, y = self.algorithm(evolutionary_parameters,
-                                                       sat_problem.number_of_variables,
-                                                       sat_problem,
-                                                       [],
-                                                       get_path)
+        bit_string, iterations, x, y = self.algorithm(evolutionary_parameters,
+                                                      sat_problem.number_of_variables,
+                                                      sat_problem,
+                                                      [],
+                                                      get_path,
+                                                      max_iter,
+                                                      False)
         t2 = time.time()
-        return bit_string, iterations, t2- t1,  x, y
+        if iterations > max_iter:
+            return bit_string, -sat_problem.result(False, bit_string), t2-t1, x, y
+        else:
+            return bit_string, iterations, t2 - t1,  x, y
 
 
 # Algorithm for the (1+1) EA
@@ -57,7 +62,7 @@ def one_plus_one(parameters, n, fitness_function, fitness_parameters, get_path, 
     fitness_maximum = fitness_function.maximum(fitness_parameters, n)
     # found_maximum is true if the maximum has been reached
     found_maximum = (fitness_value == fitness_maximum)
-    while not found_maximum:
+    while not found_maximum and iterations <= max_iter:
         # Creation of the offspring
         new_bit_string = bit_string.create_offspring_p(r/n)
         new_fitness_value = fitness_function.result(fitness_parameters, new_bit_string)
@@ -91,7 +96,7 @@ def sd_one_plus_one(parameters, n, fitness_function, fitness_parameters, get_pat
     u = 0
     # Strength
     r = 1
-    while not found_maximum:
+    while not found_maximum and iterations <= max_iter:
         # Creation of the offspring
         new_bit_string = bit_string.create_offspring_p(r/n)
         new_fitness_value = fitness_function.result(fitness_parameters, new_bit_string)
@@ -149,7 +154,7 @@ def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters, ge
     r = r_init
     # Boolean variable indication stagnation detection
     g = False
-    while not found_maximum:
+    while not found_maximum and iterations <= max_iter:
         u = u + 1
         # Stagnation Detection
         if g:
@@ -255,7 +260,7 @@ def sd_rls_r(parameters, n, fitness_function, fitness_parameters, get_path, max_
     r = 1
     s = 1
     u = 0
-    while not found_maximum:
+    while not found_maximum and iterations <= max_iter:
         new_bit_string = bit_string.create_offspring_s(s)
         new_fitness_value = fitness_function.result(fitness_parameters, new_bit_string)
         iterations += 1
@@ -310,7 +315,7 @@ def sd_rls_m(parameters, n, fitness_function, fitness_parameters, get_path, max_
     s = 1
     u = 0
     B = float('inf')
-    while not found_maximum:
+    while not found_maximum and iterations <= max_iter:
         new_bit_string = bit_string.create_offspring_s(s)
         new_fitness_value = fitness_function.result(fitness_parameters, new_bit_string)
         iterations += 1
@@ -369,7 +374,7 @@ def sa_one_lambda(parameters, n, fitness_function, fitness_parameters, get_path,
     fitness_maximum = fitness_function.maximum(fitness_parameters, n)
     found_maximum = (fitness_value == fitness_maximum)
     r = r_init
-    while not found_maximum:
+    while not found_maximum and iterations <= max_iter:
         # Create offsprings with strength r/F or r*F
         rs = []
         new_bit_strings = []
@@ -422,7 +427,7 @@ def mu_plus_one_deterministic(parameters, n, fitness_function, fitness_parameter
     y = [fitness_value]
     fitness_maximum = fitness_function.maximum(fitness_parameters, n)
     found_maximum = (fitness_value == fitness_maximum)
-    while not found_maximum:
+    while not found_maximum and iterations <= max_iter:
         # Picking one of the bit strings randomly and create an offspring from it
         index = random.randrange(mu)
         new_bit_string = population[index].create_offspring_p(1 / n)
@@ -465,7 +470,7 @@ def mu_plus_one(operator, parameters, n, fitness_function, fitness_parameters, g
     x = [iterations]
     y = [fitness_value]
     found_maximum = (fitness_value == fitness_maximum)
-    while not found_maximum:
+    while not found_maximum and iterations <= max_iter:
         # Pick an element depending on the parent selection operator
         # Uniformly at random
         if operator == "Uniform":
@@ -521,7 +526,7 @@ def compact_genetic_algorithm(parameters, n, fitness_function, fitness_parameter
     iterations = 0
     xs = []
     ys = []
-    while not found_maximum and iterations < max_iter:
+    while not found_maximum and iterations <= max_iter:
         # Generate 2 bit strings randomly using the probabilities
         x = BitString(n)
         y = BitString(n)
