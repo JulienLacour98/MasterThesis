@@ -324,7 +324,7 @@ class DF(ActionInterface):
                  labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
-                         problem_size, problem_size, step, iterations,
+                         problem_size, problem_size_end, step, iterations,
                          fitness_function, fitness_parameter_values,
                          evolutionary_algorithm, evolutionary_parameter_values,
                          sat_file_name, sat_folder_name,
@@ -373,7 +373,7 @@ class R1(ActionInterface):
                  labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
-                         problem_size, problem_size, step, iterations,
+                         problem_size, problem_size_end, step, iterations,
                          fitness_function, fitness_parameter_values,
                          evolutionary_algorithm, evolutionary_parameter_values,
                          sat_file_name, sat_folder_name,
@@ -429,7 +429,7 @@ class RN(ActionInterface):
                  labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
-                         problem_size, problem_size, step, iterations,
+                         problem_size, problem_size_end, step, iterations,
                          fitness_function, fitness_parameter_values,
                          evolutionary_algorithm, evolutionary_parameter_values,
                          sat_file_name, sat_folder_name,
@@ -493,7 +493,7 @@ class RNM(ActionInterface):
                  labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
-                         problem_size, problem_size, step, iterations,
+                         problem_size, problem_size_end, step, iterations,
                          fitness_function, fitness_parameter_values,
                          evolutionary_algorithm, evolutionary_parameter_values,
                          sat_file_name, sat_folder_name,
@@ -560,7 +560,7 @@ class RKNM(ActionInterface):
                  labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
-                         problem_size, problem_size, step, iterations,
+                         problem_size, problem_size_end, step, iterations,
                          fitness_function, fitness_parameter_values,
                          evolutionary_algorithm, evolutionary_parameter_values,
                          sat_file_name, sat_folder_name,
@@ -661,7 +661,7 @@ class ISAT(ActionInterface):
                  labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
-                         problem_size, problem_size, step, iterations,
+                         problem_size, problem_size_end, step, iterations,
                          fitness_function, fitness_parameter_values,
                          evolutionary_algorithm, evolutionary_parameter_values,
                          sat_file_name, sat_folder_name,
@@ -708,7 +708,7 @@ class ISATS(ActionInterface):
                  labels, xs, ys, yss):
 
         super().__init__(class_name, parent, controller, action,
-                         problem_size, problem_size, step, iterations,
+                         problem_size, problem_size_end, step, iterations,
                          fitness_function, fitness_parameter_values,
                          evolutionary_algorithm, evolutionary_parameter_values,
                          sat_file_name, sat_folder_name,

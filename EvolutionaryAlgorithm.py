@@ -132,7 +132,7 @@ def sd_one_plus_one(parameters, n, fitness_function, fitness_parameters, get_pat
     return bit_string, iterations, x, y
 
 
-# Algorithm for the SASD-(1+1) EA
+# Algorithm for the SASD-(1+lambda) EA
 def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters, get_path, max_iter, get_proba):
     lbd = parameters[0]
     r_init = parameters[1]
@@ -246,7 +246,7 @@ def sasd_one_plus_lambda(parameters, n, fitness_function, fitness_parameters, ge
     return bit_string, iterations, x, y
 
 
-# Algorithm for the SD-RLS_r algorithm
+# Algorithm for the SD-RLS^r algorithm
 def sd_rls_r(parameters, n, fitness_function, fitness_parameters, get_path, max_iter, get_proba):
     R = parameters[0]
     # Creation of a random bit-string of size n
@@ -300,7 +300,7 @@ def sd_rls_r(parameters, n, fitness_function, fitness_parameters, get_path, max_
     return bit_string, iterations, x, y
 
 
-# Algorithm for the SD-RLS_m algorithm
+# Algorithm for the SD-RLS^m algorithm
 def sd_rls_m(parameters, n, fitness_function, fitness_parameters, get_path, max_iter, get_proba):
     R = parameters[0]
     # Creation of a random bit-string of size n
@@ -595,11 +595,11 @@ SASDOnePlusLambda = EvolutionaryAlgorithm("SASD-(1+lambda) EA",
 
 # Creation of the SD-RLS_r
 paramR = Parameter("R", "integer", "size^3.1",  "size^3.1", float('inf'), INT)
-SDRLSR = EvolutionaryAlgorithm("SD-RLS_r", [paramR], sd_rls_r)
+SDRLSR = EvolutionaryAlgorithm("SD-RLS^r", [paramR], sd_rls_r)
 
 # Creation of the SD-RLS_m
 paramR = Parameter("R", "integer", "size^3.1", "size^3.1", float('inf'), INT)
-SDRLSM = EvolutionaryAlgorithm("SD-RLS_m", [paramR], sd_rls_m)
+SDRLSM = EvolutionaryAlgorithm("SD-RLS^m", [paramR], sd_rls_m)
 
 # Creation of the self-adjusting (1, lambda) EA
 # TODO - Paper arguing from lambda = log(n) but reveals to be too long -> so changed to n
@@ -611,16 +611,16 @@ SAOneLambda = EvolutionaryAlgorithm("SA-(1, lambda) EA", [Lambda, paramF, Initia
 
 # Creation of the (mu + 1) EA with deterministic crowding
 Mu = Parameter("mu", "integer", "size^1.2", 1, float('inf'), INT)
-MuPlusOneDeterministic = EvolutionaryAlgorithm("(mu+1) EA deterministic", [Mu], mu_plus_one_deterministic)
+MuPlusOneDeterministic = EvolutionaryAlgorithm("(mu+1) EA D", [Mu], mu_plus_one_deterministic)
 
 # Creation of the (mu + 1) EA with uniform selection
 Mu = Parameter("mu", "integer", "size^1.2", 1, float('inf'), INT)
-MuPlusOneUniform = EvolutionaryAlgorithm("(mu+1) EA uniform", [Mu], functools.partial(mu_plus_one, "Uniform"))
+MuPlusOneUniform = EvolutionaryAlgorithm("(mu+1) EA U", [Mu], functools.partial(mu_plus_one, "Uniform"))
 
 # Creation of the (mu + 1) EA with Inverse K-tournament selection
 Mu = Parameter("mu", "integer", "size^1.2", 1, float('inf'), INT)
 K = Parameter("K", "integer", 5, 1, float('inf'), INT)
-MuPlusOneInverseK = EvolutionaryAlgorithm("(mu+1) EA inverse K-tournament",
+MuPlusOneInverseK = EvolutionaryAlgorithm("(mu+1) EA I",
                                           [Mu, K],
                                           functools.partial(mu_plus_one, "Inverse-K"))
 

@@ -22,8 +22,8 @@
 #BSUB -N
 ### -- Specify the output and error file. %J is the job-id --
 ### -- -o and -e mean append, -oo and -eo mean overwrite --
-#BSUB -o Script_4-1-1-8_%J.csv
-#BSUB -e Error_4-1-1-8_%J.err
+#BSUB -o results/Script_4-1-1-8_%J.csv
+#BSUB -e results/Error_4-1-1-8_%J.err
 
 ### — Add modules necessary to execute the script
 ##module load <list of the modules the program needs>
@@ -34,6 +34,5 @@ module load numpy/1.21.1-python-3.9.6-openblas-0.3.17
 module load matplotlib/3.4.2-numpy-1.21.1-python-3.9.6
 module load pandas/1.3.1-python-3.9.6
 
-
 # here follow the commands you want to execute
-python3 Main.py 4 1 7 "cnf/uf/uf20-91/uf20-91-0" 1000 1000000 20
+python3 Main.py 4 1 7 "cnf/uf/uf20-91/uf20-91-9" 1000 1000000 20
